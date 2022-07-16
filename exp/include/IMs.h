@@ -6,29 +6,7 @@
 #define EXP_IMS_H
 
 #include "simulation.h"
-
-/*!
- * @brief calculate the interval from start time.
- * @param start : start timestamp
- * @return the length of the interval
- */
-double time_by(double start) {
-    return (clock() - start) / CLOCKS_PER_SEC;
-}
-
-/*!
- * @brief Print all elements in a vector.
- * @param S : the set
- */
-void print_set(vector<int> &S, const string &Prefix = "") {
-    cout << Prefix;
-    cout << "{";
-    for (int i = 0; i < S.size(); i++) {
-        cout << S[i];
-        if (i != S.size() - 1) cout << ",";
-    }
-    cout << "} ";
-}
+#include <queue>
 
 /*!
  * @brief CELF algorithm is used to select k most influential nodes at a given candidate.
@@ -98,7 +76,7 @@ void power_iteration(Graph &graph, vector<double> &pi, double alpha, double l1_e
             double increment = (residuals[id] - alpha_residual) / degree;
             residuals[id] = 0;
             for (auto edges:graph.g[id]) {
-                int nid = edges.first;
+                int nid = edges.v;
                 new_residuals[nid] += increment;
             }
         }
@@ -121,7 +99,7 @@ void pgrank_method(Graph &graph, int k, vector<int> &A, vector<int> &seeds) {
     for (int u : A) {
         pg_rank.clear();
         for (auto edge : graph.g[u]) {
-            int v = edge.first;
+            int v = edge.v;
             pg_rank.emplace_back(make_pair(pi[v], v));
         }
         sort(pg_rank.begin(), pg_rank.end());
@@ -146,7 +124,7 @@ void degree_method(Graph &graph, int k, vector<int> &A, vector<int> &seeds) {
     for (int u : A) {
         degree_rank.clear();
         for (auto edge : graph.g[u]) {
-            int v = edge.first;
+            int v = edge.v;
             degree_rank.emplace_back(make_pair(graph.deg_out[v], v));
         }
         sort(degree_rank.begin(), degree_rank.end());
@@ -170,7 +148,7 @@ void CELF_method(Graph &graph, int k, vector<int> &A, vector<int> &seeds) {
     for (int u : A) {
         vector<int> neighbours, one_seed;
         for (auto edge : graph.g[u])
-            neighbours.emplace_back(edge.first);
+            neighbours.emplace_back(edge.v);
         CELF(graph, k, neighbours, one_seed);
         for (int w : one_seed)
             seeds_reorder.insert(w);

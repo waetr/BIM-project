@@ -8,7 +8,8 @@ int main() {
     Graph g(R"(D:\BIM-project\BIM-project\exp\data\edges.csv)", UNDIRECTED_G);
 
     //set diffusion model
-    g.set_diffusion_model(IC);
+    //g.set_diffusion_model(IC);
+    g.set_diffusion_model(IC_M, 1);
 
     //set the active participant set A
     vector<int> A;

@@ -1,6 +1,12 @@
 # BIM-project
 
-现在的目标：一个framework,描述option1和option2
+## 接下来要做的事
+
+把一些用vector的临时变量改成数组。因为vector实在太慢了。
+
+## 实验大纲
+
+一个framework,描述option1和option2
 
 输入为：graph, diffusion model, simulation method, set S
 
@@ -14,9 +20,9 @@ simulation method: MC, sketch
 
 在option2时需要实现的IM算法：degree, pgrank, CELF
 
-# 现在的进度
+## 现在的进度
 
-实现了1个diffusion model : IC/WC
+实现了2个diffusion model : IC/WC, IC-M
 
 实现了1个estimate method : MC simulation
 
@@ -28,9 +34,9 @@ simulation method: MC, sketch
 
 还没有比较两个option的解的质量。
 
-存在的问题：MC太慢，枚举出的集合太多（即使保证所有集合都为极大的），在设置r=100时option 1勉强能跑。
+存在的问题：MC simulation的IC-M版本实在是太慢了。
 
-# 一些algorithm的性能估计
+## 一些algorithm的性能估计
 
 MC_simulation : O(iteration_rounds * 尝试active的次数) 随机数生成器采用硬件式随机数。
 

@@ -7,7 +7,6 @@
 #include "graph.h"
 #include <random>
 #include <set>
-#include <queue>
 #include <random>
 #include <algorithm>
 
@@ -38,33 +37,72 @@ bool active[MAX_NODE_SIZE];
  * @return the estimated value of influence spread
  */
 double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 100) {
+    int start = clock();
     random_device seed;
     ranlux48 engine(seed());
     uniform_real_distribution<> distrib(0.0, 1.0);
     vector<int> new_active, A, new_ones, spread;
+    vector<Edge> meet_nodes, meet_nodes_tmp;
     for (int i = 1; i <= iteration_rounds; i++) {
-        new_active = S, A = S;
-        for (int w : S) active[w] = true;
-        new_ones.clear();
-        while (!new_active.empty()) {
-            for (int u : new_active) {
-                for (auto edge : graph.g[u]) {
-                    int v = edge.first;
-                    if (active[v]) continue;
-                    bool success = (distrib(engine) < edge.second);
-                    if (success) new_ones.emplace_back(v), active[v] = true;
-                }
-            }
-            new_active = new_ones;
-            for (int u : new_ones) A.emplace_back(u);
+        if(graph.diff_model == IC) {
+            new_active = S, A = S;
+            for (int w : S) active[w] = true;
             new_ones.clear();
+            while (!new_active.empty()) {
+                for (int u : new_active) {
+                    for (auto edge : graph.g[u]) {
+                        int v = edge.v;
+                        if (active[v]) continue;
+                        bool success = (distrib(engine) < edge.p);
+                        if (success) new_ones.emplace_back(v), active[v] = true;
+                    }
+                }
+                new_active = new_ones;
+                for (int u : new_ones) A.emplace_back(u);
+                new_ones.clear();
+            }
+            for (int u : A) active[u] = false;
+            spread.emplace_back(A.size());
+            A.clear();
         }
-        for (int u : A) active[u] = false;
-        spread.emplace_back(A.size());
-        A.clear();
+        else if(graph.diff_model == IC_M) {
+            new_active = S;
+            for (int w : S) active[w] = true;
+            int spread_rounds = 0;
+            if(graph.deadline == 0) A = S;
+            else while (spread_rounds < graph.deadline) {
+                spread_rounds++;
+                for (int u : new_active) {
+                    for (auto edge : graph.g[u]) {
+                        if (active[edge.v]) continue;
+                        meet_nodes.emplace_back(edge);
+                    }
+                }
+                for (int u : new_active) A.emplace_back(u);
+                new_active.clear();
+                if(meet_nodes.empty()) break;
+                meet_nodes_tmp.clear();
+                for(auto edge : meet_nodes) {
+                    if(!active[edge.v]) {
+                        bool meet_success = (distrib(engine) < edge.m);
+                        if (meet_success) {
+                            bool activate_success = (distrib(engine) < edge.p);
+                            if (activate_success) new_active.emplace_back(edge.v), active[edge.v] = true;
+                        } else meet_nodes_tmp.emplace_back(edge);
+                    }
+                }
+                meet_nodes = meet_nodes_tmp;
+            }
+            for (int u : A) active[u] = false;
+            spread.emplace_back(A.size());
+            A.clear();
+        } else spread.emplace_back(0);
     }
     double res = 0;
     for (int a : spread) res += (double) a / iteration_rounds;
+    int ed = clock();
+    print_set(S, "seed = ");
+    cout << " Simulation time = " << (double)(ed - start) / CLOCKS_PER_SEC << endl;
     return res;
 }
 
@@ -101,7 +139,7 @@ void select_neighbours(Graph &graph, vector<int> &S, vector<vector<int> > &V_n, 
             for (int w : S) selected[w] = 2;
         neighbour_selected[u] = 0;
         for (int i = 0; i < graph.g[u].size(); i++) {
-            int v = graph.g[u][i].first;
+            int v = graph.g[u][i].v;
             if (selected[v] == 1) neighbour_selected[u]++;
         }
     }
@@ -109,7 +147,7 @@ void select_neighbours(Graph &graph, vector<int> &S, vector<vector<int> > &V_n, 
         select_neighbours(graph, S, V_n, k0, 0, 0, ++it, true);
     } else {
         for (int i = i_now; i < graph.g[u].size(); i++) {
-            int v = graph.g[u][i].first;
+            int v = graph.g[u][i].v;
             if (!selected[v]) {
                 selected[v] = 1;
                 k_now++;
