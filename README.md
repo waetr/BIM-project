@@ -26,6 +26,8 @@ simulation method: MC, sketch
 
 封装了三个IM solver的option 2。
 
+还没有比较两个option的解的质量。
+
 存在的问题：MC太慢，枚举出的集合太多（即使保证所有集合都为极大的），在设置r=100时option 1勉强能跑。
 
 # 一些algorithm的性能估计
