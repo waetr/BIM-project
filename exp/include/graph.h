@@ -61,8 +61,8 @@ public:
      * @param weight : weight of edge, 1.0 as default
      */
     void add_edge(int source, int target, double weight = 1.0) {
-        n = max(n, max(source, target));
-        while (g.size() <= n) {
+        n = max(n, max(source, target) + 1);
+        while (g.size() < n) {
             g.emplace_back(gg);
             deg_in.emplace_back(0);
             deg_out.emplace_back(0);
@@ -78,7 +78,6 @@ public:
      * @param filename : the name of loading file
      */
     Graph(const string& filename, graph_type type) : Graph() {
-        int max_node = 0;
         vector<pair<int, int>> edges;
         ifstream inFile(filename, ios::in);
         string lineStr;
@@ -91,7 +90,6 @@ public:
                 else {
                     y = stoi(str);
                     edges.emplace_back(x, y);
-                    max_node = max(max_node, max(x, y));
                     x = -1;
                 }
         }
@@ -108,11 +106,34 @@ public:
      */
     void set_diffusion_model(model_type new_type) {
         if(new_type == IC) {
-            for(int i = 0; i <= n; i++) {
+            for(int i = 0; i < n; i++) {
                 for(int j = 0; j < g[i].size(); j++)
                     g[i][j].second = 1.0 / deg_in[g[i][j].first];
             }
         }
+    }
+};
+
+struct Node{
+public:
+    int vertex;
+    double value;
+    Node() = default;
+    Node(int v, double p) : vertex(v), value(p) {}
+    bool operator < (const Node &other) const {
+        if(value == other.value)
+            return vertex < other.vertex;
+        else
+            return value < other.value;
+    }
+    bool operator > (const Node &other) const {
+        if(value == other.value)
+            return vertex > other.vertex;
+        else
+            return value > other.value;
+    }
+    bool operator != (const Node &a) const {
+        return a.vertex != vertex;
     }
 };
 

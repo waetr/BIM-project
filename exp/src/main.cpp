@@ -1,10 +1,8 @@
-
-#include "simulation.h"
+#include "IMs.h"
 
 int main() {
-    //option 1
     //set k
-    k0 = 1;
+    int k0 = 3;
 
     //load graph from absolute path
     Graph g(R"(D:\BIM-project\BIM-project\exp\data\edges.csv)", UNDIRECTED_G);
@@ -13,26 +11,33 @@ int main() {
     g.set_diffusion_model(IC);
 
     //set the active participant set A
-    set<int> A;
-    generate_seed(g, A, 1);
+    vector<int> A;
+    //generate_seed(g, A, 3);
+    A.push_back(100);
 
-    //V_n to store all possible neighbour set S
-    vector<set<int> > V_n;
+    //Instantiate an empty container to store the results
+    vector<int> seeds;
 
-    //generate all collections recursively
-    select_neighbours(g, A, V_n, 0, 0, A.begin(), true);
-    cout << "number of S_n : " << V_n.size() << endl;
+//    //option_1
+//    enumeration_method(g, k0, A, seeds);
+//    print_set(seeds, "final seed set enumerated = ");
+//    seeds.clear();
 
-    double answer = 0;
-    for (auto &S_n : V_n) {
-        cout << "set S = {";
-        for (auto u : S_n) cout << u << ",";
-        cout << "} ";
-        //for each set, calculate its influence spread
-        double x = MC_simulation(g, S_n);
-        cout << "simulation result:" << x << endl;
-        answer = max(answer, x);
-    }
-    cout << "\nfinal answer = " << answer << endl;
+    //option 2
+    degree_method(g, k0, A, seeds);
+    print_set(seeds, "final seed set using degree = ");
+    printf("\n");
+    seeds.clear();
+
+    pgrank_method(g, k0, A, seeds);
+    print_set(seeds, "final seed set using pagerank = ");
+    printf("\n");
+    seeds.clear();
+
+    CELF_method(g, k0, A, seeds);
+    print_set(seeds, "final seed set using CELF = ");
+    printf("\n");
+    seeds.clear();
+
     return 0;
 }
