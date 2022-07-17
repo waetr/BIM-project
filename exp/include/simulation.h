@@ -4,10 +4,9 @@
 
 #ifndef EXP_SIMULATION_H
 #define EXP_SIMULATION_H
+
 #include "graph.h"
-#include <random>
 #include <set>
-#include <random>
 #include <algorithm>
 
 /*!
@@ -36,15 +35,13 @@ bool active[MAX_NODE_SIZE];
  * @param iteration_times : the number of rounds for MC simulations
  * @return the estimated value of influence spread
  */
-double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 100) {
-    int start = clock();
-    random_device seed;
-    ranlux48 engine(seed());
-    uniform_real_distribution<> distrib(0.0, 1.0);
-    vector<int> new_active, A, new_ones, spread;
+double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10000) {
+    int st = clock();
+    vector<int> new_active, A, new_ones;
     vector<Edge> meet_nodes, meet_nodes_tmp;
+    double res = 0;
     for (int i = 1; i <= iteration_rounds; i++) {
-        if(graph.diff_model == IC) {
+        if (graph.diff_model == IC) {
             new_active = S, A = S;
             for (int w : S) active[w] = true;
             new_ones.clear();
@@ -53,7 +50,7 @@ double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 100) {
                     for (auto edge : graph.g[u]) {
                         int v = edge.v;
                         if (active[v]) continue;
-                        bool success = (distrib(engine) < edge.p);
+                        bool success = (random_real() < edge.p);
                         if (success) new_ones.emplace_back(v), active[v] = true;
                     }
                 }
@@ -62,47 +59,45 @@ double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 100) {
                 new_ones.clear();
             }
             for (int u : A) active[u] = false;
-            spread.emplace_back(A.size());
+            res += (double) A.size() / iteration_rounds;
             A.clear();
-        }
-        else if(graph.diff_model == IC_M) {
+        } else if (graph.diff_model == IC_M) {
             new_active = S;
             for (int w : S) active[w] = true;
             int spread_rounds = 0;
-            if(graph.deadline == 0) A = S;
-            else while (spread_rounds < graph.deadline) {
-                spread_rounds++;
-                for (int u : new_active) {
-                    for (auto edge : graph.g[u]) {
-                        if (active[edge.v]) continue;
-                        meet_nodes.emplace_back(edge);
+            if (graph.deadline == 0) A = S;
+            else
+                while (spread_rounds < graph.deadline) {
+                    spread_rounds++;
+                    for (int u : new_active) {
+                        for (auto edge : graph.g[u]) {
+                            if (active[edge.v]) continue;
+                            meet_nodes.emplace_back(edge);
+                        }
                     }
-                }
-                for (int u : new_active) A.emplace_back(u);
-                new_active.clear();
-                if(meet_nodes.empty()) break;
-                meet_nodes_tmp.clear();
-                for(auto edge : meet_nodes) {
-                    if(!active[edge.v]) {
-                        bool meet_success = (distrib(engine) < edge.m);
-                        if (meet_success) {
-                            bool activate_success = (distrib(engine) < edge.p);
-                            if (activate_success) new_active.emplace_back(edge.v), active[edge.v] = true;
-                        } else meet_nodes_tmp.emplace_back(edge);
+                    for (int u : new_active) A.emplace_back(u);
+                    new_active.clear();
+                    if (meet_nodes.empty()) break;
+                    meet_nodes_tmp.clear();
+                    for (auto edge : meet_nodes) {
+                        if (!active[edge.v]) {
+                            bool meet_success = (random_real() < edge.m);
+                            if (meet_success) {
+                                bool activate_success = (random_real() < edge.p);
+                                if (activate_success) new_active.emplace_back(edge.v), active[edge.v] = true;
+                            } else meet_nodes_tmp.emplace_back(edge);
+                        }
                     }
+                    meet_nodes = meet_nodes_tmp;
                 }
-                meet_nodes = meet_nodes_tmp;
-            }
             for (int u : A) active[u] = false;
-            spread.emplace_back(A.size());
+            res += (double) A.size() / iteration_rounds;
             A.clear();
-        } else spread.emplace_back(0);
+        }
     }
-    double res = 0;
-    for (int a : spread) res += (double) a / iteration_rounds;
     int ed = clock();
-    print_set(S, "seed = ");
-    cout << " Simulation time = " << (double)(ed - start) / CLOCKS_PER_SEC << endl;
+    print_set(S, "sets = ");
+    cout << " ans = " << res << " time = " << (double) (ed - st) / CLOCKS_PER_SEC << endl;
     return res;
 }
 
@@ -125,7 +120,8 @@ int stack_kS[MAX_NODE_SIZE], stack_kS_top;
  * @param it : Iterator internal parameters, should initialize as S.begin()
  * @param is_new : Boolean internal parameters, should initialize as true
  */
-void select_neighbours(Graph &graph, vector<int> &S, vector<vector<int> > &V_n, int k0, int k_now, int i_now, vector<int>::iterator it,
+void select_neighbours(Graph &graph, vector<int> &S, vector<vector<int> > &V_n, int k0, int k_now, int i_now,
+                       vector<int>::iterator it,
                        bool is_new) {
     if (it == S.end()) {
         vector<int> set_tmp;
@@ -162,6 +158,39 @@ void select_neighbours(Graph &graph, vector<int> &S, vector<vector<int> > &V_n, 
         }
     }
     if (is_new && it == S.begin()) for (int w : S) selected[w] = 0;
+}
+
+/*!
+ * @brief Calculate the degree of neighbor overlap at random nodes.
+ * @param graph : the graph
+ * @param seeds : the active participant set
+ * @param k : k in problem definition
+ * @param iteration_rounds : The number of selection
+ * @return the mean overlap ratio
+ */
+double experimental_neighbor_overlap(Graph &graph, vector<int> &seeds, int k, int iteration_rounds = 1) {
+    int *num = new int[graph.n]();
+    int *random_selected = new int[graph.n]();
+    double res = 0;
+    for(int i = 0; i < iteration_rounds; i++) {
+        int tot = 0, overlap = 0;
+        for(int u : seeds) {
+            for(int j = 0; j < graph.g[u].size(); j++) random_selected[j] = j;
+            shuffle(random_selected, random_selected+graph.g[u].size(), std::mt19937(std::random_device()()));
+            for(int j = 0; j < min(k, (int)graph.g[u].size()); j++) num[graph.g[u][random_selected[j]].v]++;
+        }
+        for(int u : seeds) {
+            for(auto e : graph.g[u]) {
+                if(num[e.v] > 0) tot++;
+                if(num[e.v] > 1) overlap++;
+                num[e.v] = 0;
+            }
+        }
+        res += (double) overlap / (tot * iteration_rounds);
+    }
+    delete[] num;
+    delete[] random_selected;
+    return res;
 }
 
 #endif //EXP_SIMULATION_H

@@ -15,43 +15,39 @@
  * @param candidate : the candidate node set
  * @param seeds : returns the most influential nodes set
  */
-void CELF(Graph &graph, int k, vector<int> &candidate, vector<int> &seeds) {
+void CELF(Graph &graph, int k, vector<int> &candidate, vector<int> &seeds){
     if (k >= candidate.size()) {
         seeds = candidate;
         printf("Nodes are not exceeding k. All selected.");
         return;
     }
-    priority_queue<Node> nonactive;
+    /// first double : magimal influence
+    /// first int : index
+    /// second int : iteration round
+    typedef pair<double, pair<int, int> > node0;
+    priority_queue<node0> Q;
     seeds.resize(1);
-    for (int c : candidate) {
-        seeds[0] = c;
-        nonactive.push(Node(c, MC_simulation(graph, seeds)));
+    for(int u : candidate) {
+        seeds[0] = u;
+        Q.push(make_pair(MC_simulation(graph, seeds), make_pair(u, 0)));
     }
-    Node current_node;
     double current_spread = 0;
     seeds.clear();
-    double cur;
-    int count;
 
-    for (int i = 0; i < k; i++) {
-        cur = clock();
-        Node best_node(-1, -1);
-        seeds.push_back(nonactive.top().vertex);
-        count = 0;
-        while (nonactive.top() != best_node) {
-            current_node = nonactive.top();
-            seeds[i] = current_node.vertex;
-            current_node.value = MC_simulation(graph, seeds) - current_spread;
-            count++;
-            nonactive.pop();
-            nonactive.push(current_node);
-            if (best_node < current_node)
-                best_node = current_node;
+    while(seeds.size() < k) {
+        node0 u = Q.top();
+        Q.pop();
+        if(u.second.second == seeds.size()) {
+            cout << "Insert! node = " << u.second.first << endl;
+            seeds.emplace_back(u.second.first);
+            current_spread += u.first;
+        } else {
+            seeds.emplace_back(u.second.first);
+            u.first = MC_simulation(graph, seeds) - current_spread;
+            seeds.pop_back();
+            u.second.second = seeds.size();
+            Q.push(u);
         }
-        nonactive.pop();
-        seeds[i] = best_node.vertex;
-        current_spread += best_node.value;
-        printf("seed: %d\t%d\t%f\t%d\n", seeds[i], i + 1, time_by(cur), count);
     }
 }
 

@@ -129,44 +129,21 @@ public:
                     g[i][j].p = 1.0 / deg_in[g[i][j].v];
             }
         } else if(new_type == IC_M) {
+            double dd = 0;
+            int xx = 0;
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < g[i].size(); j++){
                     g[i][j].p = 1.0 / deg_in[g[i][j].v];
                     g[i][j].m = 5.0 / (5.0 + deg_out[i]);
+                    dd += g[i][j].m;
+                    xx++;
                 }
             }
             deadline = new_deadline;
+            dd /= xx;
+            cout << "average m = " << dd << endl;
         }
     }
 };
-
-struct Node {
-public:
-    int vertex;
-    double value;
-
-    Node() = default;
-
-    Node(int v, double p) : vertex(v), value(p) {}
-
-    bool operator<(const Node &other) const {
-        if (value == other.value)
-            return vertex < other.vertex;
-        else
-            return value < other.value;
-    }
-
-    bool operator>(const Node &other) const {
-        if (value == other.value)
-            return vertex > other.vertex;
-        else
-            return value > other.value;
-    }
-
-    bool operator!=(const Node &a) const {
-        return a.vertex != vertex;
-    }
-};
-
 
 #endif //UNTITLED_GRAPH_H

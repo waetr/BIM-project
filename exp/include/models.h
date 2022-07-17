@@ -5,6 +5,8 @@
 #ifndef EXP_MODELS_H
 #define EXP_MODELS_H
 #include <vector>
+#include <random>
+#include <iostream>
 
 #define MAX_NODE_SIZE 2000000
 #define graph_type int
@@ -16,6 +18,18 @@
 #define IC 1
 #define LT 2
 #define IC_M 3
+
+std::random_device rd__;
+std::minstd_rand random_engine(rd__());
+std::uniform_real_distribution<double> distrib(0.0, 1.0);
+
+/*!
+ * @brief Random number generator that generates real number between [0,1)
+ * @return A random real number between [0,1)
+ */
+inline double random_real() {
+    return distrib(random_engine);
+}
 
 /*!
  * @brief calculate the interval from start time.
