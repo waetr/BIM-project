@@ -36,7 +36,6 @@ bool active[MAX_NODE_SIZE];
  * @return the estimated value of influence spread
  */
 double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10000) {
-    int st = clock();
     vector<int> new_active, A, new_ones;
     vector<Edge> meet_nodes, meet_nodes_tmp;
     double res = 0;
@@ -62,6 +61,7 @@ double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10000)
             res += (double) A.size() / iteration_rounds;
             A.clear();
         } else if (graph.diff_model == IC_M) {
+            meet_nodes.clear();
             new_active = S;
             for (int w : S) active[w] = true;
             int spread_rounds = 0;
@@ -90,14 +90,12 @@ double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10000)
                     }
                     meet_nodes = meet_nodes_tmp;
                 }
+            for (int u : new_active) A.emplace_back(u);
             for (int u : A) active[u] = false;
             res += (double) A.size() / iteration_rounds;
             A.clear();
         }
     }
-    int ed = clock();
-    print_set(S, "sets = ");
-    cout << " ans = " << res << " time = " << (double) (ed - st) / CLOCKS_PER_SEC << endl;
     return res;
 }
 
@@ -161,35 +159,28 @@ void select_neighbours(Graph &graph, vector<int> &S, vector<vector<int> > &V_n, 
 }
 
 /*!
- * @brief Calculate the degree of neighbor overlap at random nodes.
+ * @brief Calculate the degree of neighbor overlap at active participant.
  * @param graph : the graph
  * @param seeds : the active participant set
- * @param k : k in problem definition
  * @param iteration_rounds : The number of selection
  * @return the mean overlap ratio
  */
-double experimental_neighbor_overlap(Graph &graph, vector<int> &seeds, int k, int iteration_rounds = 1) {
+double estimate_neighbor_overlap(Graph &graph, vector<int> &seeds) {
     int *num = new int[graph.n]();
-    int *random_selected = new int[graph.n]();
     double res = 0;
-    for(int i = 0; i < iteration_rounds; i++) {
-        int tot = 0, overlap = 0;
-        for(int u : seeds) {
-            for(int j = 0; j < graph.g[u].size(); j++) random_selected[j] = j;
-            shuffle(random_selected, random_selected+graph.g[u].size(), std::mt19937(std::random_device()()));
-            for(int j = 0; j < min(k, (int)graph.g[u].size()); j++) num[graph.g[u][random_selected[j]].v]++;
+    int tot = 0, overlap = 0;
+    for (int u : seeds)
+        for (auto e : graph.g[u])
+            num[e.v]++;
+    for (int u : seeds) {
+        for (auto e : graph.g[u]) {
+            if (num[e.v] > 0) tot++;
+            if (num[e.v] > 1) overlap++;
+            num[e.v] = 0;
         }
-        for(int u : seeds) {
-            for(auto e : graph.g[u]) {
-                if(num[e.v] > 0) tot++;
-                if(num[e.v] > 1) overlap++;
-                num[e.v] = 0;
-            }
-        }
-        res += (double) overlap / (tot * iteration_rounds);
     }
+    res = (double) overlap / tot;
     delete[] num;
-    delete[] random_selected;
     return res;
 }
 

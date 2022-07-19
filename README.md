@@ -1,36 +1,23 @@
 # BIM-project
 
+## 问题*的solution
 
-
-## 问题*
-
-在IC-M Model上运行CELF算法时，我发现一个问题：CELF输出的种子集不稳定，基本每次运行输出的种子集都完全不一样。
-
-进一步探究，发现对于size相同的集合，MC simulation的结果都基本等于size的大小。故CELF无法判断哪个集合更优。
-
-在排除代码bug的原因后，发现在simulation时seed set对邻居节点的meet基本不成功。
-
-对数据集进行探究，发现在BlogCatalog数据集中，每条边的meeting probability都非常小，平均值为0.0574587。
-
-对比IC-M model的原论文的实验，他们用的DBLP数据集的meeting probability平均值为0.338765。
-
-(Recall: meeting probability $m_{u,v}=\frac{c}{c+d_{out}(u)}$, where $c=5$) 意味着BlogCatalog数据集很稠密。
-
-**个人意见**：可以把meeting probability改为在$\{0.2,0.3,...,0.7,0.8\}$中随机（参考原论文）或者换个数据集？
+最终原因：MC simulation写出了点bug，导致内存没清空……确认修好了之后结果和运行速度都正常了。
 
 ## 更新的东西
 
-1. 写了estimate随机选点的邻居重合度的API。
-   1. 思路：通过shuffle让每个点随机选k个邻居。
-   2. $重合程度=\frac{被两个及以上源点选中的点}{所有被选中的点}$
-   3. 简单跑了几遍,size=10,k=3时重合程度=0.04。有待进一步统计。
-2. 大致比较了不同的随机数生成器的性能差异：minstd_rand（线性同余法）的速度比mt19937（马特赛特旋转）快约30%。最后选用了minstd_rand生成随机数。*原因：根据线性同余法的性质，在[0,1)范围内近似为平均分布，已经满足simulation的需要。*
-3. 改善随机数并且使用-O3加速之后，MC simulation快的飞起，而且r=100和r=1000000的性能差距不大（意味着可以用r=10000正常实验了）
-4. 重写了CELF。（原代码在遇到问题(*)时会出bug）
+写了option 2的advance版本。
 
-## 接下来要做的事
+算法：
 
-比较集合质量的差异。
+1. 把active paticipate set $A$的所有邻居拿出来，记为$\N_A$。*对于每个$v\in \N_A$, $A_v$表示有邻居为$v$的active paticipate的集合。*
+2. 按照某种顺序（degree, pageRank, margimal influence(CELF)）对于每个$v\in \N_A$, 尝试将$v$加入到seed里。
+3. 每次尝试，任意选择一个$u\in A_v$，标记$u$多选了一个邻居，并且把$v$加入seed里。如果$u$已经选满$k$个邻居了，就把$u$从$A_v$中删除，再从$A_v-\{u\}$中任选一个作为$u$再次尝试，直到$u$还没选满或者$A_v$为空为止。如果$A_v$为空，说明$v$没有对应的active paticipate满足条件了，于是放弃$v$。
+4. 把所有$v\in \N_A$依次尝试加入，算法结束。
+
+选用了某一组$size=3$，邻居重合率$=\frac{3}{7}$的paticipate set，$k=2$，在$IC$和$TC-IC$模型上分别测试，输出见test.log。
+
+结论：option 1结果最准确。在邻居重合率高的情况下，option 2漏掉了很多节点，而advance method选的节点数和option 1一样多，且degree,CELF选择的seed和option 1一样。
 
 ## 实验大纲
 
@@ -48,10 +35,11 @@ simulation method: MC, sketch
 
 在option2时需要实现的IM算法：degree, pgrank, CELF
 
-## 一些algorithm的性能估计
+## 更新日志
 
-MC_simulation : O(iteration_rounds * 尝试active的次数) 随机数生成器采用硬件式随机数。
+2022/7/17
 
-enumeration : 复杂度与所有解空间的size相当
-
-IC-M model，当m_{p,v} = 1且deadline = inf时，MC simulation结果与IC model一致。
+1. 写了estimate随机选点的邻居重合度的API。$重合程度=\frac{被两个及以上源点选中的点}{所有被选中的点}$
+2. 大致比较了不同的随机数生成器的性能差异：minstd_rand（线性同余法）的速度比mt19937（马特赛特旋转）快约30%。最后选用了minstd_rand生成随机数。*原因：根据线性同余法的性质，在[0,1)范围内近似为平均分布，已经满足simulation的需要。*
+3. 改善随机数并且使用-O3加速之后，MC simulation快的飞起，而且r=100和r=1000000的性能差距不大（意味着可以用r=10000正常实验了）
+4. 重写了CELF。（原代码在遇到问题(*)时会出bug）

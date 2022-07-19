@@ -1,0 +1,108 @@
+IC MODEL
+D:\BIM-project\BIM-project\exp\cmake-build-debug\exp.exe
+overlap ratio = 0.428571
+    The size of the solution space : 27
+    set S = {3829,232,1241,988,1823}  simulation result = 778.84610
+    set S = {3829,232,1241,988,3338}  simulation result = 904.83000
+    set S = {3829,232,1241,1823,3338}  simulation result = 945.14790
+    set S = {3829,232,1823,988,3338}  simulation result = 953.54010
+    set S = {3829,232,3257,988,1823}  simulation result = 865.74820
+    set S = {3829,232,3257,988,3338}  simulation result = 969.19050
+    set S = {3829,232,3257,1823,3338}  simulation result = 1012.07730
+    set S = {3829,232,3338,988,1823}  simulation result = 957.66970
+    set S = {3829,1241,1823,232,988}  simulation result = 789.46630
+    set S = {3829,1241,1823,232,3338}  simulation result = 964.78470
+    set S = {3829,1241,1823,988,3338}  simulation result = 619.14580
+    set S = {3829,1241,3257,232,988}  simulation result = 805.84930
+    set S = {3829,1241,3257,232,1823}  simulation result = 859.97980
+    set S = {3829,1241,3257,232,3338}  simulation result = 978.71220
+    set S = {3829,1241,3257,988,1823}  simulation result = 495.52080
+    set S = {3829,1241,3257,988,3338}  simulation result = 648.47590
+    set S = {3829,1241,3257,1823,3338}  simulation result = 716.36100
+    set S = {3829,1241,3338,232,988}  simulation result = 901.70970
+    set S = {3829,1241,3338,232,1823}  simulation result = 954.23790
+    set S = {3829,1241,3338,988,1823}  simulation result = 627.51300
+    set S = {3829,1823,3257,232,988}  simulation result = 867.35710
+    set S = {3829,1823,3257,232,3338}  simulation result = 1020.73110
+    set S = {3829,1823,3257,988,3338}  simulation result = 708.66830
+    set S = {3829,1823,3338,232,988}  simulation result = 956.42470
+    set S = {3829,3257,3338,232,988}  simulation result = 968.79260
+    set S = {3829,3257,3338,232,1823}  simulation result = 1027.45580
+    set S = {3829,3257,3338,988,1823}  simulation result = 709.86700
+final seed set enumerated = {3829,3257,3338,232,1823} spread = 1026.63
+final seed set using degree = {232,3338,3829} spread = 888.938
+final seed set using pagerank = {232,3338,3829} spread = 885.957
+    Nodes are not exceeding k. All selected.
+    Initialization time = 7.11000
+    node = 232	round = 1	time = 0.00000
+    node = 3338	round = 3	time = 4.48400
+    Initialization time = 6.28100
+    node = 232	round = 1	time = 0.00000
+    node = 3338	round = 3	time = 4.57800
+final seed set using CELF = {232,3338,3829} spread = 888.794
+final seed set using advanced degree = {232,3338,3829,3257,1823} spread = 1028.52
+final seed set using advanced pagerank = {232,3338,3829,1823,988} spread = 957.281
+Initialization time = 8.64000
+    node = 232	round = 1	time = 0.00000
+    node = 3338	round = 4	time = 8.68800
+    node = 3829	round = 7	time = 19.23500
+    node = 3257	round = 10	time = 30.96900
+    node = 1823	round = 12	time = 37.28200
+final seed set using advanced CELF = {232,3338,3829,3257,1823} spread = 1021.63
+
+进程已结束，退出代码为 0
+
+IC-M model(deadline = 15)
+D:\BIM-project\BIM-project\exp\cmake-build-debug\exp.exe
+average m = 0.0574587
+overlap ratio = 0.428571
+    The size of the solution space : 27
+    set S = {3829,232,1241,988,1823}  simulation result = 15.66000
+    set S = {3829,232,1241,988,3338}  simulation result = 14.66110
+    set S = {3829,232,1241,1823,3338}  simulation result = 17.69210
+    set S = {3829,232,1823,988,3338}  simulation result = 17.71750
+    set S = {3829,232,3257,988,1823}  simulation result = 16.99230
+    set S = {3829,232,3257,988,3338}  simulation result = 16.09780
+    set S = {3829,232,3257,1823,3338}  simulation result = 19.07540
+    set S = {3829,232,3338,988,1823}  simulation result = 17.74920
+    set S = {3829,1241,1823,232,988}  simulation result = 15.61330
+    set S = {3829,1241,1823,232,3338}  simulation result = 17.65130
+    set S = {3829,1241,1823,988,3338}  simulation result = 15.00970
+    set S = {3829,1241,3257,232,988}  simulation result = 14.01070
+    set S = {3829,1241,3257,232,1823}  simulation result = 16.90930
+    set S = {3829,1241,3257,232,3338}  simulation result = 15.96120
+    set S = {3829,1241,3257,988,1823}  simulation result = 14.28300
+    set S = {3829,1241,3257,988,3338}  simulation result = 13.25950
+    set S = {3829,1241,3257,1823,3338}  simulation result = 16.36400
+    set S = {3829,1241,3338,232,988}  simulation result = 14.69510
+    set S = {3829,1241,3338,232,1823}  simulation result = 17.63330
+    set S = {3829,1241,3338,988,1823}  simulation result = 15.03200
+    set S = {3829,1823,3257,232,988}  simulation result = 16.98430
+    set S = {3829,1823,3257,232,3338}  simulation result = 19.13840
+    set S = {3829,1823,3257,988,3338}  simulation result = 16.41850
+    set S = {3829,1823,3338,232,988}  simulation result = 17.75670
+    set S = {3829,3257,3338,232,988}  simulation result = 16.02130
+    set S = {3829,3257,3338,232,1823}  simulation result = 19.12260
+    set S = {3829,3257,3338,988,1823}  simulation result = 16.43610
+final seed set enumerated = {3829,1823,3257,232,3338} spread = 19.074
+final seed set using degree = {232,3338,3829} spread = 11.5573
+final seed set using pagerank = {232,3338,3829} spread = 11.5561
+    Nodes are not exceeding k. All selected.
+    Initialization time = 6.45300
+    node = 1823	round = 1	time = 0.00000
+    node = 232	round = 3	time = 3.67200
+    Initialization time = 5.54600
+    node = 1823	round = 1	time = 0.00000
+    node = 232	round = 3	time = 3.65700
+final seed set using CELF = {232,1823,3829} spread = 12.5859
+final seed set using advanced degree = {232,3338,3829,3257,1823} spread = 19.0132
+final seed set using advanced pagerank = {232,3338,3829,1823,988} spread = 17.8323
+    Initialization time = 7.81300
+    node = 1823	round = 1	time = 0.00000
+    node = 232	round = 3	time = 3.57800
+    node = 3829	round = 5	time = 8.45300
+    node = 3338	round = 7	time = 15.04700
+    node = 988	round = 9	time = 21.75000
+final seed set using advanced CELF = {1823,232,3829,3338,988} spread = 17.7269
+
+进程已结束，退出代码为 0
