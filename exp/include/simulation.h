@@ -35,7 +35,7 @@ bool active[MAX_NODE_SIZE];
  * @param iteration_times : the number of rounds for MC simulations
  * @return the estimated value of influence spread
  */
-double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10000) {
+double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 100) {
     vector<int> new_active, A, new_ones;
     vector<Edge> meet_nodes, meet_nodes_tmp;
     double res = 0;
@@ -156,6 +156,59 @@ void select_neighbours(Graph &graph, vector<int> &S, vector<vector<int> > &V_n, 
         }
     }
     if (is_new && it == S.begin()) for (int w : S) selected[w] = 0;
+}
+
+/*!
+ * @brief Calculate the maximum seed set size of the active participant.
+ * @param graph : the graph
+ * @param S : the active participant set
+ * @param k0 : number of neighbours k of each node
+ * @param k_now : Integer internal parameters, should initialize as 0
+ * @param i_now : Integer internal parameters, should initialize as 0
+ * @param it : Iterator internal parameters, should initialize as S.begin()
+ * @param is_new : Boolean internal parameters, should initialize as true
+ */
+int max_neighbours(Graph &graph, vector<int> &S, int k0, int k_now, int i_now, vector<int>::iterator it, bool is_new) {
+    int tmp;
+    if (it == S.end()) {
+        tmp = stack_kS_top;
+        stack_kS_top = 0;
+        memset(selected, 0, sizeof (selected));
+        memset(neighbour_selected, 0, sizeof (neighbour_selected));
+        return tmp;
+    }
+    int u = *it;
+    if (is_new) {
+        if (it == S.begin())
+            for (int w : S) selected[w] = 2;
+        neighbour_selected[u] = 0;
+        for (int i = 0; i < graph.g[u].size(); i++) {
+            int v = graph.g[u][i].v;
+            if (selected[v] == 1) neighbour_selected[u]++;
+        }
+    }
+    if (k_now == k0 || neighbour_selected[u] == graph.g[u].size()) {
+        tmp = max_neighbours(graph, S, k0, 0, 0, ++it, true);
+        if(tmp != -1) return tmp;
+    } else {
+        for (int i = i_now; i < graph.g[u].size(); i++) {
+            int v = graph.g[u][i].v;
+            if (!selected[v]) {
+                selected[v] = 1;
+                k_now++;
+                neighbour_selected[u]++;
+                stack_kS[++stack_kS_top] = v;
+                tmp = max_neighbours(graph, S, k0, k_now, i + 1, it, false);
+                if(tmp != -1) return tmp;
+                selected[v] = 0;
+                k_now--;
+                neighbour_selected[u]--;
+                --stack_kS_top;
+            }
+        }
+    }
+    if (is_new && it == S.begin()) for (int w : S) selected[w] = 0;
+    return -1;
 }
 
 /*!

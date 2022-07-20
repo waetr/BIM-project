@@ -8,6 +8,8 @@
 #include <random>
 #include <iostream>
 
+#define verbose_flag 1
+
 #define MAX_NODE_SIZE 2000000
 #define graph_type int
 #define DIRECTED_G 0
@@ -19,9 +21,20 @@
 #define LT 2
 #define IC_M 3
 
+#define IM_solver int
+#define ENUMERATION 0
+#define DEGREE 1
+#define PAGERANK 2
+#define CELF_NORMAL 3
+#define DEGREE_ADVANCED 4
+#define PAGERANK_ADVANCED 5
+#define CELF_ADVANCED 6
+
 std::random_device rd__;
 std::minstd_rand random_engine(rd__());
 std::uniform_real_distribution<double> distrib(0.0, 1.0);
+
+bool CELF_out_of_time = false;
 
 /*!
  * @brief Random number generator that generates real number between [0,1)

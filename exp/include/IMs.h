@@ -19,7 +19,7 @@
 void CELF(Graph &graph, int k, vector<int> &candidate, vector<int> &seeds) {
     if (k >= candidate.size()) {
         seeds = candidate;
-        printf("Nodes are not exceeding k. All selected.\n");
+        if(verbose_flag) printf("Nodes are not exceeding k. All selected.\n");
         return;
     }
     double cur = clock();
@@ -31,19 +31,20 @@ void CELF(Graph &graph, int k, vector<int> &candidate, vector<int> &seeds) {
     priority_queue<node0> Q;
     seeds.resize(1);
     for (int u : candidate) {
+        if(verbose_flag) cout << ":";
         seeds[0] = u;
         Q.push(make_pair(MC_simulation(graph, seeds), make_pair(u, 0)));
     }
     double current_spread = 0;
     seeds.clear();
-    printf("Initialization time = %.5f\n", time_by(cur));
+    if(verbose_flag) printf("Initialization time = %.5f\n", time_by(cur));
     cur = clock();
     while (seeds.size() < k) {
         r++;
         node0 u = Q.top();
         Q.pop();
         if (u.second.second == seeds.size()) {
-            printf("node = %d\tround = %d\ttime = %.5f\n", u.second.first, r, time_by(cur));
+            if(verbose_flag) printf("node = %d\tround = %d\ttime = %.5f\n", u.second.first, r, time_by(cur));
             seeds.emplace_back(u.second.first);
             current_spread += u.first;
         } else {
@@ -110,6 +111,7 @@ void pgrank_method(Graph &graph, int k, vector<int> &A, vector<int> &seeds) {
     }
     for (int w : seeds_reorder) seeds.emplace_back(w);
     seeds_reorder.clear();
+    pg_rank.clear();
 }
 
 /*!
@@ -135,6 +137,7 @@ void degree_method(Graph &graph, int k, vector<int> &A, vector<int> &seeds) {
     }
     for (int w : seeds_reorder) seeds.emplace_back(w);
     seeds_reorder.clear();
+    degree_rank.clear();
 }
 
 /*!
@@ -169,16 +172,30 @@ void enumeration_method(Graph &graph, int k, vector<int> &A, vector<int> &seeds)
     vector<vector<int> > V_n;
     vector<double> value;
     select_neighbours(graph, A, V_n, k, 0, 0, A.begin(), true);
-    cout << "The size of the solution space : " << V_n.size() << endl;
+    if(verbose_flag) cout << "The size of the solution space : " << V_n.size() << endl;
     for (auto &S_n : V_n) {
-        print_set(S_n, "set S = ");
+        if(verbose_flag) print_set(S_n, "set S = ");
         double x = MC_simulation(graph, S_n);
         value.emplace_back(x);
-        printf(" simulation result = %.5f\n", x);
+        if(verbose_flag) printf(" simulation result = %.5f\n", x);
     }
     double max_value = 0;
     for (int i = 1; i < value.size(); i++) if (value[i] > value[max_value]) max_value = i;
     seeds = V_n[max_value];
+}
+
+int source_participant(int v, vector<int> f[], const int k, const int num_neighbours[]) {
+    if(f[v].empty()) return -1;
+    int u = f[v][f[v].size() - 1];
+    while (num_neighbours[u] == k) {
+        f[v].pop_back();
+        if (f[v].empty()) {
+            u = -1;
+            break;
+        }
+        u = f[v][f[v].size() - 1];
+    }
+    return u;
 }
 
 void advanced_pgrank_method(Graph &graph, int k, vector<int> &A, vector<int> &seeds) {
@@ -195,22 +212,13 @@ void advanced_pgrank_method(Graph &graph, int k, vector<int> &A, vector<int> &se
         }
     for (int w : S) shuffle(f[w].begin(), f[w].end(), std::mt19937(std::random_device()()));
     for (int w : S) S_ordered.emplace_back(make_pair(pi[w], w));
+    //S_ordered is ordered by pageRank
     sort(S_ordered.begin(), S_ordered.end());
     reverse(S_ordered.begin(), S_ordered.end());
-
     for (int i = 0; i < S_ordered.size(); i++) {
         int v = S_ordered[i].second;
-        if (f[v].empty()) continue;
-        int u = f[v][f[v].size() - 1], flag = 0;
-        while (num_neighbours[u] == k) {
-            f[v].pop_back();
-            if (f[v].empty()) {
-                flag = 1;
-                break;
-            }
-            u = f[v][f[v].size() - 1];
-        }
-        if (flag) continue;
+        int u = source_participant(v, f, k, num_neighbours);
+        if (u == -1) continue;
         num_neighbours[u]++;
         seeds.emplace_back(v);
     }
@@ -230,22 +238,13 @@ void advanced_degree_method(Graph &graph, int k, vector<int> &A, vector<int> &se
         }
     for (int w : S) shuffle(f[w].begin(), f[w].end(), std::mt19937(std::random_device()()));
     for (int w : S) S_ordered.emplace_back(make_pair(graph.deg_out[w], w));
+    //S_ordered is ordered by degree
     sort(S_ordered.begin(), S_ordered.end());
     reverse(S_ordered.begin(), S_ordered.end());
-
     for (int i = 0; i < S_ordered.size(); i++) {
         int v = S_ordered[i].second;
-        if (f[v].empty()) continue;
-        int u = f[v][f[v].size() - 1], flag = 0;
-        while (num_neighbours[u] == k) {
-            f[v].pop_back();
-            if (f[v].empty()) {
-                flag = 1;
-                break;
-            }
-            u = f[v][f[v].size() - 1];
-        }
-        if (flag) continue;
+        int u = source_participant(v, f, k, num_neighbours);
+        if (u == -1) continue;
         num_neighbours[u]++;
         seeds.emplace_back(v);
     }
@@ -274,30 +273,21 @@ void advanced_CELF_method(Graph &graph, int k, vector<int> &A, vector<int> &seed
     }
     double current_spread = 0;
     seeds.clear();
-    printf("Initialization time = %.5f\n", time_by(cur));
-    cur = clock();
-    while (!Q.empty()) {
+    if(verbose_flag) printf("Initialization time = %.5f\n", time_by(cur));
+    int max_seed_size = max_neighbours(graph, A, k, 0, 0, A.begin(), true);
+    while (!Q.empty() && seeds.size() < max_seed_size) {
         node0 Tp = Q.top();
         int v = Tp.second.first, it_round = Tp.second.second;
         double mg = Tp.first;
         Q.pop();
-        if (f[v].empty()) continue;
-        int u = f[v][f[v].size() - 1], flag = 0;
-        while (num_neighbours[u] == k) {
-            f[v].pop_back();
-            if (f[v].empty()) {
-                flag = 1;
-                break;
-            }
-            u = f[v][f[v].size() - 1];
-        }
-        if (flag) continue;
+        int u = source_participant(v, f, k, num_neighbours);
+        if (u == -1) continue;
         r++;
         if (it_round == seeds.size()) {
             num_neighbours[u]++;
             seeds.emplace_back(v);
             current_spread += mg;
-            printf("node = %d\tround = %d\ttime = %.5f\n", v, r, time_by(cur));
+            if(verbose_flag) printf("node = %d\tround = %d\ttime = %.5f\n", v, r, time_by(cur));
         } else {
             seeds.emplace_back(v);
             Tp.first = MC_simulation(graph, seeds) - current_spread;
@@ -309,6 +299,5 @@ void advanced_CELF_method(Graph &graph, int k, vector<int> &A, vector<int> &seed
     delete[] num_neighbours;
     delete[] f;
 }
-
 
 #endif //EXP_IMS_H
