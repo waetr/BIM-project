@@ -37,7 +37,7 @@ bool active[MAX_NODE_SIZE];
  */
 double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10000) {
     double cur = clock();
-    int meet_time = 0;
+    long long meet_time = 0;
     vector<int> new_active, A, new_ones;
     vector<Edge> meet_nodes, meet_nodes_tmp;
     double res = 0;
@@ -103,7 +103,7 @@ double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10000)
         }
     }
     double end = time_by(cur);
-    if (verbose_flag) printf("\t\tresult=%.3f time=%.3f meet time=%d\n", res, end, meet_time);
+    if (verbose_flag) printf("\t\tresult=%.3f time=%.3f meet time=%lld\n", res, end, meet_time);
     return res;
 }
 

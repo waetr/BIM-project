@@ -38,7 +38,9 @@ option 2:运行CELF advanced.
 CELF advanced done. total time = 77.360, simulation time = 77.344(Initialization time = 67.50000)
 ```
 
-**结论：CELF所有的时间基本在MC simulation上。并且在Initialization部分做的simulation最多（占总时间95%以上）。**
+**结论：CELF所有的时间基本在MC simulation上。并且在Initialization部分做的simulation占大多数。**
+
+
 
 
 
@@ -67,26 +69,39 @@ CELF advanced done. total time = 77.360, simulation time = 77.344(Initialization
 
 
 
-观察到每进行一组数据的实验，都要运行CELF很多次，而每次CELF都要花大量时间计算$\sigma(\{u\})$。
+**优化一。**观察到每进行一组数据的实验，都要运行CELF很多次，而每次CELF都要花大量时间计算$\sigma(\{u\})$。
 
 想到可以把$\sigma(\{u\})$用数组存下来。
 
 优化前（先做一次option 2 CELF，再做一次advanced CELF）：
 
 ```
-CELF method done. total time = 161.422
-CELF advanced done. total time = 75.078
+CELF method done. total time = 161
+CELF advanced done. total time = 75
 ```
 
 优化后：
 
+```
+CELF method done. total time = 68
+CELF advanced done. total time = 8
+```
+
+**结论：效果拔群！**
 
 
 
+**优化二。**之前生成active participant的方式是每当size改变，就完全随机生成。这样存下的$\sigma(\{u\})$没有被充分利用。
 
-之前生成active participant的方式是每当size改变，就完全随机生成。这样存下的$\sigma(\{u\})$没有被充分利用。
+假设之前已经算了size = 10的active participant，当size增加到20时，只需要往原来的集合中添加10个点皆可，这样原来节点的邻居$u$的$\sigma(\{u\})$就不需要再算一遍。
 
 
+
+优化一，二的缺点：因为CELF的initialization部分被优化掉了，难以比较两个算法在这一部分的时间差异。
+
+
+
+*7/21 19:22 已经将优化一，二的version放到服务器上跑了。*
 
 
 
