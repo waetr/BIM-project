@@ -6,6 +6,14 @@
 
 average meeting probability = 0.0574587
 
+## update at 7/22 2:19
+
+更正了一些逻辑上的问题(CELF advance的while条件，MC simulation的if(deadline=0)部分)，删除了一些冗余变量，增加了一些注释。
+
+修改了Run_simulation方法，使其能传入IM solvers.
+
+多输出了一些内容，便于复现实验。
+
 ## Problems and Inquiry
 
 **问题：现在的实验方法无法在reasonable amount of time内跑出participant size > 5 且 k > 5的实验数据。**

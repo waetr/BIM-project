@@ -14,48 +14,51 @@ double solvers(Graph &graph, int k, vector<int> &A, vector<int> &seeds, IM_solve
         case ENUMERATION:
             enumeration_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using enumeration: ");
+            print_set_f(seeds, " Seed set using enumeration: ");
             break;
         case DEGREE:
             degree_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using degree: ");
+            print_set_f(seeds, " Seed set using degree: ");
             break;
         case PAGERANK:
             pgrank_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using pagerank: ");
+            print_set_f(seeds, " Seed set using pagerank: ");
             break;
         case CELF_NORMAL:
             CELF_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using CELF: ");
+            print_set_f(seeds, " Seed set using CELF: ");
             break;
         case DEGREE_ADVANCED:
             advanced_degree_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using ADVANCED degree: ");
+            print_set_f(seeds, " Seed set using ADVANCED degree: ");
             break;
         case PAGERANK_ADVANCED:
             advanced_pgrank_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using ADVANCED pagerank: ");
+            print_set_f(seeds, " Seed set using ADVANCED pagerank: ");
             break;
         case CELF_ADVANCED:
             advanced_CELF_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using ADVANCED CELF: ");
+            print_set_f(seeds, " Seed set using ADVANCED CELF: ");
             break;
         default:
             break;
     }
     if (verbose_flag) printf(" total time = %.3f\n", time_by(cur));
     else puts("");
+    out << '\n';
     return time_by(cur);
 }
 
-bool tooLarge(Graph &g, vector<int> &A) {
-    set<int> S;
-    for (int u : A)
-        for (auto e : g.g[u]) S.insert(e.v);
-    return (S.size() >= 50 * A.size());
-}
-
-void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, model_type type, int rounds = 3) {
-    ofstream out("../output/result.out", ios::app);
+void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, vector<IM_solver> &solver_batch, model_type type, int rounds = 3) {
+    fstream file_eraser("../output/result.out", ios::out);
+    file_eraser.close();
+    out.open("../output/result.out", ios::app);
     //load graph from absolute path
     Graph G("../data/edges.csv", UNDIRECTED_G);
 
@@ -70,7 +73,7 @@ void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, model_type type,
     string solver_name[] = {"ENUMERATION", "DEGREE", "PAGERANK", "CELF", "DEGREE_ADVANCED", "PAGERANK_ADVANCED",
                             "CELF_ADVANCED"};
 
-    vector<IM_solver> solver_ = {DEGREE, PAGERANK, CELF_NORMAL, DEGREE_ADVANCED, PAGERANK_ADVANCED, CELF_ADVANCED};
+
 
     int random_set[rounds][G.n];
     for (int i = 0; i < rounds; i++) {
@@ -86,10 +89,12 @@ void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, model_type type,
             A.clear();
             for(int j = 0; j < A_size; j++) A.emplace_back(random_set[r_-1][j]);
             print_set(A, "active participant: "), puts("");
+            print_set_f(A, "active participant: "), out << '\n';
             overlap_ratio += estimate_neighbor_overlap(G, A) / rounds;
             for (int k : k_batch) {
                 printf("Working on A_size = %d, round = %d, k = %d\n", A_size, r_, k);
-                for (IM_solver solver_used : solver_) {
+                out << "Working on A_size = " << A_size << ", round = " << r_ << ", k = " << k << endl;
+                for (IM_solver solver_used : solver_batch) {
                     timer[solver_used][k] += solvers(G, k, A, seeds, solver_used) / rounds;
                     result[solver_used][k] += MC_simulation(G, seeds) / rounds;
                 }
@@ -101,7 +106,7 @@ void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, model_type type,
         cout << "Mean overlap ratio = " << overlap_ratio << endl;
         for (int k : k_batch) {
             cout << "\tk = " << k << endl;
-            for (IM_solver solver_used : solver_) {
+            for (IM_solver solver_used : solver_batch) {
                 cout << "\t\tseed quality of " << solver_name[solver_used] << " = " << result[solver_used][k];
                 cout << " mean time = " << timer[solver_used][k] << endl;
             }
@@ -111,7 +116,7 @@ void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, model_type type,
         out << "Mean overlap ratio = " << overlap_ratio << endl;
         for (int k : k_batch) {
             out << "\tk = " << k << endl;
-            for (IM_solver solver_used : solver_) {
+            for (IM_solver solver_used : solver_batch) {
                 out << "\t\tseed quality of " << solver_name[solver_used] << " = " << result[solver_used][k];
                 out << " mean time = " << timer[solver_used][k] << endl;
             }

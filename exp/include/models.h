@@ -7,6 +7,7 @@
 #include <vector>
 #include <random>
 #include <iostream>
+#include <algorithm>
 
 #define verbose_flag 1
 
@@ -34,7 +35,7 @@ std::random_device rd__;
 std::minstd_rand random_engine(rd__());
 std::uniform_real_distribution<double> distrib(0.0, 1.0);
 
-bool CELF_out_of_time = false;
+std::ofstream out;
 
 /*!
  * @brief Random number generator that generates real number between [0,1)
@@ -58,13 +59,31 @@ double time_by(double start) {
  * @param S : the set
  */
 void print_set(std::vector<int> &S, const std::string &Prefix = "") {
+    std::vector<int> S_ordered = S;
+    std::sort(S_ordered.begin(), S_ordered.end());
     std::cout << Prefix;
     std::cout << "{";
-    for (int i = 0; i < S.size(); i++) {
-        std::cout << S[i];
-        if (i != S.size() - 1) std::cout << ",";
+    for (int i = 0; i < S_ordered.size(); i++) {
+        std::cout << S_ordered[i];
+        if (i != S_ordered.size() - 1) std::cout << ",";
     }
     std::cout << "} ";
+}
+
+/*!
+ * @brief Print all elements to the file in a vector.
+ * @param S : the set
+ */
+void print_set_f(std::vector<int> &S, const std::string &Prefix = "") {
+    std::vector<int> S_ordered = S;
+    std::sort(S_ordered.begin(), S_ordered.end());
+    out << Prefix;
+    out << "{";
+    for (int i = 0; i < S_ordered.size(); i++) {
+        out << S_ordered[i];
+        if (i != S_ordered.size() - 1) out << ",";
+    }
+    out << "} ";
 }
 
 #endif //EXP_MODELS_H

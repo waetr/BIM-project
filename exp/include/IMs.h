@@ -9,6 +9,9 @@
 #include <queue>
 #include <stack>
 
+/*!
+ * @brief MG0[u] stores influence spread of {u}
+ */
 double MG0[MAX_NODE_SIZE];
 
 /*!
@@ -188,6 +191,14 @@ void enumeration_method(Graph &graph, int k, vector<int> &A, vector<int> &seeds)
     seeds = V_n[max_value];
 }
 
+/*!
+ * @brief Select an active participant u of node v, and remove u from f[v] if u does not meet the criteria.
+ * @param v : the candidate neighbour node
+ * @param f : the source active participant set of v
+ * @param k : Predefined k
+ * @param num_neighbours : num_neighbours[u] means how many neighbours that active participant u has been selected
+ * @return : the source active participant of v, and -1 if no node meets the criteria.
+ */
 int source_participant(int v, vector<int> f[], const int k, const int num_neighbours[]) {
     if(f[v].empty()) return -1;
     int u = f[v][f[v].size() - 1];
@@ -202,10 +213,17 @@ int source_participant(int v, vector<int> f[], const int k, const int num_neighb
     return u;
 }
 
+/*!
+ * @brief Encapsulated operations for advanced version of IM solver : pagerank
+ * @param graph : the graph
+ * @param k : the number in the problem definition
+ * @param A : the active participant set A
+ * @param seeds : returns the seed set S = {S_1, S_2, ..., S_n}
+ */
 void advanced_pgrank_method(Graph &graph, int k, vector<int> &A, vector<int> &seeds) {
     vector<double> pi(graph.n, 0);
     power_iteration(graph, pi, 0.2);
-    set<int> S;
+    set<int> S; //candidate neighbour set
     vector<pair<double, int> > S_ordered;
     int *num_neighbours = new int[graph.n]();
     vector<int> *f = new vector<int>[graph.n](); //f[v] means in-coming active participant of v
@@ -230,8 +248,15 @@ void advanced_pgrank_method(Graph &graph, int k, vector<int> &A, vector<int> &se
     delete[] f;
 }
 
+/*!
+ * @brief Encapsulated operations for advanced version of IM solver : degree
+ * @param graph : the graph
+ * @param k : the number in the problem definition
+ * @param A : the active participant set A
+ * @param seeds : returns the seed set S = {S_1, S_2, ..., S_n}
+ */
 void advanced_degree_method(Graph &graph, int k, vector<int> &A, vector<int> &seeds) {
-    set<int> S;
+    set<int> S; //candidate neighbour set
     vector<pair<double, int> > S_ordered;
     int *num_neighbours = new int[graph.n]();
     vector<int> *f = new vector<int>[graph.n](); //f[v] means in-coming active participant of v
@@ -256,10 +281,17 @@ void advanced_degree_method(Graph &graph, int k, vector<int> &A, vector<int> &se
     delete[] f;
 }
 
+/*!
+ * @brief Encapsulated operations for advanced version of IM solver : CELF
+ * @param graph : the graph
+ * @param k : the number in the problem definition
+ * @param A : the active participant set A
+ * @param seeds : returns the seed set S = {S_1, S_2, ..., S_n}
+ */
 void advanced_CELF_method(Graph &graph, int k, vector<int> &A, vector<int> &seeds) {
     double cur = clock();
     int r = 0;
-    set<int> S;
+    set<int> S; //candidate neighbour set
     int *num_neighbours = new int[graph.n]();
     vector<int> *f = new vector<int>[graph.n](); //f[v] means in-coming active participant of v
     for (int u : A)
@@ -279,8 +311,7 @@ void advanced_CELF_method(Graph &graph, int k, vector<int> &A, vector<int> &seed
     double current_spread = 0;
     seeds.clear();
     if(verbose_flag) printf("\tInitialization time = %.5f\n", time_by(cur));
-    int max_seed_size = max_neighbours(graph, A, k, 0, 0, A.begin(), true);
-    while (!Q.empty() && seeds.size() < max_seed_size) {
+    while (!Q.empty()) {
         node0 Tp = Q.top();
         int v = Tp.second.first, it_round = Tp.second.second;
         double mg = Tp.first;
