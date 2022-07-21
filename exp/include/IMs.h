@@ -9,6 +9,8 @@
 #include <queue>
 #include <stack>
 
+double MG0[MAX_NODE_SIZE];
+
 /*!
  * @brief CELF algorithm is used to select k most influential nodes at a given candidate.
  * @param graph : the graph
@@ -31,20 +33,19 @@ void CELF(Graph &graph, int k, vector<int> &candidate, vector<int> &seeds) {
     priority_queue<node0> Q;
     seeds.resize(1);
     for (int u : candidate) {
-        if(verbose_flag) cout << ":";
         seeds[0] = u;
-        Q.push(make_pair(MC_simulation(graph, seeds), make_pair(u, 0)));
+        if(MG0[u] == 0) MG0[u] = MC_simulation(graph, seeds);
+        Q.push(make_pair(MG0[u], make_pair(u, 0)));
     }
     double current_spread = 0;
     seeds.clear();
-    if(verbose_flag) printf("Initialization time = %.5f\n", time_by(cur));
-    cur = clock();
+    if(verbose_flag) printf("\tInitialization time = %.5f\n", time_by(cur));
     while (seeds.size() < k) {
         r++;
         node0 u = Q.top();
         Q.pop();
         if (u.second.second == seeds.size()) {
-            if(verbose_flag) printf("node = %d\tround = %d\ttime = %.5f\n", u.second.first, r, time_by(cur));
+            if(verbose_flag) printf("\tnode = %d\tround = %d\ttime = %.5f\n", u.second.first, r, time_by(cur));
             seeds.emplace_back(u.second.first);
             current_spread += u.first;
         } else {
@@ -55,6 +56,7 @@ void CELF(Graph &graph, int k, vector<int> &candidate, vector<int> &seeds) {
             Q.push(u);
         }
     }
+    if(verbose_flag) printf("CELF done. total time = %.3f\n", time_by(cur));
 }
 
 /*!
@@ -148,6 +150,7 @@ void degree_method(Graph &graph, int k, vector<int> &A, vector<int> &seeds) {
  * @param seeds : returns the seed set S = {S_1, S_2, ..., S_n}
  */
 void CELF_method(Graph &graph, int k, vector<int> &A, vector<int> &seeds) {
+    double cur = clock();
     set<int> seeds_reorder;
     for (int u : A) {
         vector<int> neighbours, one_seed;
@@ -159,6 +162,7 @@ void CELF_method(Graph &graph, int k, vector<int> &A, vector<int> &seeds) {
     }
     for (int w : seeds_reorder) seeds.emplace_back(w);
     seeds_reorder.clear();
+    if(verbose_flag) printf("CELF method done. total time = %.3f\n", time_by(cur));
 }
 
 /*!
@@ -269,11 +273,12 @@ void advanced_CELF_method(Graph &graph, int k, vector<int> &A, vector<int> &seed
     seeds.resize(1);
     for (int u : S) {
         seeds[0] = u;
-        Q.push(make_pair(MC_simulation(graph, seeds), make_pair(u, 0)));
+        if(MG0[u] == 0) MG0[u] = MC_simulation(graph, seeds);
+        Q.push(make_pair(MG0[u], make_pair(u, 0)));
     }
     double current_spread = 0;
     seeds.clear();
-    if(verbose_flag) printf("Initialization time = %.5f\n", time_by(cur));
+    if(verbose_flag) printf("\tInitialization time = %.5f\n", time_by(cur));
     int max_seed_size = max_neighbours(graph, A, k, 0, 0, A.begin(), true);
     while (!Q.empty() && seeds.size() < max_seed_size) {
         node0 Tp = Q.top();
@@ -287,7 +292,7 @@ void advanced_CELF_method(Graph &graph, int k, vector<int> &A, vector<int> &seed
             num_neighbours[u]++;
             seeds.emplace_back(v);
             current_spread += mg;
-            if(verbose_flag) printf("node = %d\tround = %d\ttime = %.5f\n", v, r, time_by(cur));
+            if(verbose_flag) printf("\tnode = %d\tround = %d\ttime = %.5f\n", v, r, time_by(cur));
         } else {
             seeds.emplace_back(v);
             Tp.first = MC_simulation(graph, seeds) - current_spread;
@@ -298,6 +303,7 @@ void advanced_CELF_method(Graph &graph, int k, vector<int> &A, vector<int> &seed
     }
     delete[] num_neighbours;
     delete[] f;
+    if(verbose_flag) printf("CELF advanced done. total time = %.3f\n", time_by(cur));
 }
 
 #endif //EXP_IMS_H

@@ -35,7 +35,9 @@ bool active[MAX_NODE_SIZE];
  * @param iteration_times : the number of rounds for MC simulations
  * @return the estimated value of influence spread
  */
-double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 100) {
+double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10000) {
+    double cur = clock();
+    int meet_time = 0;
     vector<int> new_active, A, new_ones;
     vector<Edge> meet_nodes, meet_nodes_tmp;
     double res = 0;
@@ -61,10 +63,12 @@ double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 100) {
             res += (double) A.size() / iteration_rounds;
             A.clear();
         } else if (graph.diff_model == IC_M) {
+            double cur0 = clock();
             meet_nodes.clear();
             new_active = S;
             for (int w : S) active[w] = true;
             int spread_rounds = 0;
+            cur0 = clock();
             if (graph.deadline == 0) A = S;
             else
                 while (spread_rounds < graph.deadline) {
@@ -81,6 +85,7 @@ double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 100) {
                     meet_nodes_tmp.clear();
                     for (auto edge : meet_nodes) {
                         if (!active[edge.v]) {
+                            meet_time++;
                             bool meet_success = (random_real() < edge.m);
                             if (meet_success) {
                                 bool activate_success = (random_real() < edge.p);
@@ -90,12 +95,15 @@ double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 100) {
                     }
                     meet_nodes = meet_nodes_tmp;
                 }
+            cur0 = clock();
             for (int u : new_active) A.emplace_back(u);
             for (int u : A) active[u] = false;
             res += (double) A.size() / iteration_rounds;
             A.clear();
         }
     }
+    double end = time_by(cur);
+    if (verbose_flag) printf("\t\tresult=%.3f time=%.3f meet time=%d\n", res, end, meet_time);
     return res;
 }
 
@@ -173,8 +181,8 @@ int max_neighbours(Graph &graph, vector<int> &S, int k0, int k_now, int i_now, v
     if (it == S.end()) {
         tmp = stack_kS_top;
         stack_kS_top = 0;
-        memset(selected, 0, sizeof (selected));
-        memset(neighbour_selected, 0, sizeof (neighbour_selected));
+        memset(selected, 0, sizeof(selected));
+        memset(neighbour_selected, 0, sizeof(neighbour_selected));
         return tmp;
     }
     int u = *it;
@@ -189,7 +197,7 @@ int max_neighbours(Graph &graph, vector<int> &S, int k0, int k_now, int i_now, v
     }
     if (k_now == k0 || neighbour_selected[u] == graph.g[u].size()) {
         tmp = max_neighbours(graph, S, k0, 0, 0, ++it, true);
-        if(tmp != -1) return tmp;
+        if (tmp != -1) return tmp;
     } else {
         for (int i = i_now; i < graph.g[u].size(); i++) {
             int v = graph.g[u][i].v;
@@ -199,7 +207,7 @@ int max_neighbours(Graph &graph, vector<int> &S, int k0, int k_now, int i_now, v
                 neighbour_selected[u]++;
                 stack_kS[++stack_kS_top] = v;
                 tmp = max_neighbours(graph, S, k0, k_now, i + 1, it, false);
-                if(tmp != -1) return tmp;
+                if (tmp != -1) return tmp;
                 selected[v] = 0;
                 k_now--;
                 neighbour_selected[u]--;

@@ -1,12 +1,92 @@
 # BIM-project
 
-## 更新的东西
+实验用数据集：BlogCatalog
 
-修改了一些可能的bug，稍微优化了一些性能有关的细节。
+点数=10312 边数=667966 平均度数=64.7756 
 
-写了顶层experiment方法，目前可以设置好参数直接挂到服务器上跑，输出结果重定向到output/result.out中。
+average meeting probability = 0.0574587
 
-result0.out为上一次本地跑出的部分实验结果。
+## Problems and Inquiry
+
+**问题：现在的实验方法无法在reasonable amount of time内跑出participant size > 5 且 k > 5的实验数据。**
+
+从早上八点左右截至17：49，实验在服务器上还在size=5部分跑。剩下的size还有{10,20,50,100,200,500}。
+
+
+
+观察实验，发现时间基本被CELF以及其advance部分占去。
+
+对CELF的运算时间进行分析：
+
+option 2:运行CELF A.size()次 （Initialization time为计算所有$\sigma(\{u\})$的时间）
+
+```
+	CELF done. total time = 15.234, simulation time = 15.234(Initialization time = 14.81200)
+
+​	CELF done. total time = 16.266, simulation time = 16.266(Initialization time = 16.07900)
+
+​	CELF done. total time = 55.531, simulation time = 55.531(Initialization time = 55.35900)
+
+​	CELF done. total time = 49.063, simulation time = 49.063(Initialization time = 48.87500)
+
+​	CELF done. total time = 24.359, simulation time = 24.359(Initialization time = 24.26500)
+```
+
+option 2:运行CELF advanced.
+
+```
+CELF advanced done. total time = 77.360, simulation time = 77.344(Initialization time = 67.50000)
+```
+
+**结论：CELF所有的时间基本在MC simulation上。并且在Initialization部分做的simulation最多（占总时间95%以上）。**
+
+
+
+对MC_simulation，猜想可能是vector存取限制了性能，考虑换成数组。
+
+实验结果：
+
+1. -O3加速下，vector time = 4.516, array time = 4.578
+2. 不加速，vector time = 30.437, array time = 22.250
+
+**结论：没有O3的话加速明显，可惜在O3下换不换并没有什么区别**
+
+
+
+对MC_simulation，猜想可能是meet次数太多导致性能较慢。
+
+选定一个size=24，邻居总数=8700的集合进行simulation（仅1次）。
+
+实验结果：在deadline=15的TC/IC模型下，平均尝试meet 547000次；在IC模型下，平均尝试activate 123000次.
+
+分析：在IC模型，一个节点最多被其邻居节点各尝试激活1次，时间上限为$O(|V|+|E|)$; 在IC-M模型，每轮迭代一个节点都会被每个active neighbour尝试连接1次，时间上限为$O((|V|+|E|)*deadline)$。当deadline较大时，IC-M模型的simulation比IC模型慢。
+
+残念ながら，即使现在的MC simulation已经做到了理论上的最少操作数，每次完整的simulation(r=10000)还是需要进行很多次meet。
+
+**结论：MC_simulation没法再优化了**
+
+
+
+观察到每进行一组数据的实验，都要运行CELF很多次，而每次CELF都要花大量时间计算$\sigma(\{u\})$。
+
+想到可以把$\sigma(\{u\})$用数组存下来。
+
+优化前（先做一次option 2 CELF，再做一次advanced CELF）：
+
+```
+CELF method done. total time = 161.422
+CELF advanced done. total time = 75.078
+```
+
+优化后：
+
+
+
+
+
+之前生成active participant的方式是每当size改变，就完全随机生成。这样存下的$\sigma(\{u\})$没有被充分利用。
+
+
 
 
 
@@ -61,3 +141,11 @@ simulation method: MC, sketch
 选用了某一组$size=3$，邻居重合率$=\frac{3}{7}$的paticipate set，$k=2$，在$IC$和$TC-IC$模型上分别测试，输出见test.log。
 
 结论：option 1结果最准确。在邻居重合率高的情况下，option 2漏掉了很多节点，而advance method选的节点数和option 1一样多，且degree,CELF选择的seed和option 1一样。
+
+2022/7/20
+
+修改了一些可能的bug，稍微优化了一些性能有关的细节。
+
+写了顶层experiment方法，目前可以设置好参数直接挂到服务器上跑，输出结果重定向到output/result.out中。
+
+result0.out为上一次本地跑出的部分实验结果。

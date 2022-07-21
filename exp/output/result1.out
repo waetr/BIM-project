@@ -1,0 +1,74 @@
+Active participant size = 1
+Mean overlap ratio = 0
+	k = 1
+		seed quality of DEGREE = 5.4408 mean time = 7.33333e-06
+		seed quality of PAGERANK = 5.44397 mean time = 0.177989
+		seed quality of CELF = 6.44973 mean time = 13.4627
+		seed quality of DEGREE_ADVANCED = 5.46913 mean time = 8.3e-05
+		seed quality of PAGERANK_ADVANCED = 5.45657 mean time = 0.178248
+		seed quality of CELF_ADVANCED = 6.46557 mean time = 13.5092
+	k = 2
+		seed quality of DEGREE = 9.41953 mean time = 9e-06
+		seed quality of PAGERANK = 9.42973 mean time = 0.178329
+		seed quality of CELF = 9.65353 mean time = 18.6802
+		seed quality of DEGREE_ADVANCED = 9.34303 mean time = 7.96667e-05
+		seed quality of PAGERANK_ADVANCED = 9.4398 mean time = 0.178144
+		seed quality of CELF_ADVANCED = 9.6564 mean time = 18.6752
+	k = 5
+		seed quality of DEGREE = 16.0487 mean time = 9.33333e-06
+		seed quality of PAGERANK = 16.0525 mean time = 0.178243
+		seed quality of CELF = 16.2939 mean time = 37.6711
+		seed quality of DEGREE_ADVANCED = 16.0092 mean time = 8.16667e-05
+		seed quality of PAGERANK_ADVANCED = 16.0404 mean time = 0.177908
+		seed quality of CELF_ADVANCED = 16.3577 mean time = 42.1055
+	k = 10
+		seed quality of DEGREE = 22.127 mean time = 1.16667e-05
+		seed quality of PAGERANK = 50.1074 mean time = 0.178168
+		seed quality of CELF = 50.4379 mean time = 81.6841
+		seed quality of DEGREE_ADVANCED = 50.09 mean time = 300.077
+		seed quality of PAGERANK_ADVANCED = 50.1267 mean time = 0.17824
+		seed quality of CELF_ADVANCED = 50.3889 mean time = 97.5413
+	k = 20
+		seed quality of DEGREE = 50.1074 mean time = 0.178168
+		seed quality of PAGERANK = 50.4379 mean time = 81.6841
+		seed quality of CELF = 50.09 mean time = 300.077
+		seed quality of DEGREE_ADVANCED = 50.1267 mean time = 0.17824
+		seed quality of PAGERANK_ADVANCED = 50.3889 mean time = 97.5413
+		seed quality of CELF_ADVANCED = 27.9311 mean time = 268.234
+Active participant size = 2
+Mean overlap ratio = 0.210256
+	k = 1
+		seed quality of DEGREE = 5.09493 mean time = 8.66667e-06
+		seed quality of PAGERANK = 5.06273 mean time = 0.17724
+		seed quality of CELF = 5.40827 mean time = 30.9528
+		seed quality of DEGREE_ADVANCED = 7.19333 mean time = 8.4e-05
+		seed quality of PAGERANK_ADVANCED = 7.49363 mean time = 0.177245
+		seed quality of CELF_ADVANCED = 7.32007 mean time = 30.8677
+	k = 2
+		seed quality of DEGREE = 12.0111 mean time = 9.66667e-06
+		seed quality of PAGERANK = 11.9771 mean time = 0.177387
+		seed quality of CELF = 10.945 mean time = 35.175
+		seed quality of DEGREE_ADVANCED = 13.9643 mean time = 8.46667e-05
+		seed quality of PAGERANK_ADVANCED = 13.2912 mean time = 0.177372
+		seed quality of CELF_ADVANCED = 13.4621 mean time = 63.7911
+	k = 5
+		seed quality of DEGREE = 18.7148 mean time = 1.16667e-05
+		seed quality of PAGERANK = 18.7647 mean time = 0.177623
+		seed quality of CELF = 18.7462 mean time = 62.2593
+		seed quality of DEGREE_ADVANCED = 20.7567 mean time = 9.2e-05
+		seed quality of PAGERANK_ADVANCED = 21.1463 mean time = 0.17768
+		seed quality of CELF_ADVANCED = 20.7641 mean time = 134.079
+	k = 10
+		seed quality of DEGREE = 22.7753 mean time = 1.26667e-05
+		seed quality of PAGERANK = 45.517 mean time = 0.177595
+		seed quality of CELF = 45.5192 mean time = 0.177244
+		seed quality of DEGREE_ADVANCED = 45.4769 mean time = 0.000112
+		seed quality of PAGERANK_ADVANCED = 45.5167 mean time = 0.177539
+		seed quality of CELF_ADVANCED = 45.5213 mean time = 287.238
+	k = 20
+		seed quality of DEGREE = 45.517 mean time = 0.177595
+		seed quality of PAGERANK = 45.5192 mean time = 0.177244
+		seed quality of CELF = 45.4769 mean time = 0.000112
+		seed quality of DEGREE_ADVANCED = 45.5167 mean time = 0.177539
+		seed quality of PAGERANK_ADVANCED = 45.5213 mean time = 287.238
+		seed quality of CELF_ADVANCED = 22.7526 mean time = 441.27

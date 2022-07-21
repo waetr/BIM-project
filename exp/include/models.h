@@ -10,7 +10,7 @@
 
 #define verbose_flag 1
 
-#define MAX_NODE_SIZE 2000000
+#define MAX_NODE_SIZE 20000
 #define graph_type int
 #define DIRECTED_G 0
 #define UNDIRECTED_G 1
