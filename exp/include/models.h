@@ -67,7 +67,7 @@ void print_set(std::vector<int> &S, const std::string &Prefix = "") {
         std::cout << S_ordered[i];
         if (i != S_ordered.size() - 1) std::cout << ",";
     }
-    std::cout << "} ";
+    std::cout << "}[" << S_ordered.size() << "]";
 }
 
 /*!
@@ -83,7 +83,7 @@ void print_set_f(std::vector<int> &S, const std::string &Prefix = "") {
         out << S_ordered[i];
         if (i != S_ordered.size() - 1) out << ",";
     }
-    out << "} ";
+    out << "}[" << S_ordered.size() << "]";
 }
 
 #endif //EXP_MODELS_H

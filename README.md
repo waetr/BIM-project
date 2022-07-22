@@ -8,15 +8,37 @@ average meeting probability = 0.0574587
 
 ## 更新的内容
 
-在advanced CELF部分加了一个trivival的优化：如果某个active participant的out neighbours不超过k个，那先把这些neighbours全部选上。
-
 增加了一些注释，调整了一些代码结构。
 
 新增编译参数：-r，--rounds，MC simulation每次迭代的次数。默认为10000.
 
+## Some Inquiry
+
+尝试在advanced CELF部分加了一个trivival的优化：如果某个active participant的out neighbours不超过k个，那先把这些neighbours全部选上。
+
+乍一看，貌似提前帮选好了很多节点；然而实际的实验结果如下(simulation time = 100)
+
+```bash
+Before optimization:
+Initial time = 0, max round = 95, time = 13.202
+After optimization:
+Initial time = 30.124, max round = 352, time = 128.374
+```
+
+变成了完全的负优化。
+
+分析：提前选出一些节点后，initialization部分算的就不是单独点的$\sigma(\{u\})$，而是$\sigma(\{S\cup u\})$，开销大大增加；
+
+并且margimal influence随着seed的下降梯度变得很不平滑，导致CELF迭代的次数变大。
+
+**结论：还是不"优化"为好。**
+
+
+
 ## 运行方法
 
 ```bash
+cd exp
 mkdir build && cd build
 cmake ..
 make

@@ -313,7 +313,7 @@ void advanced_CELF_method(Graph &graph, int k, vector<int> &A, vector<int> &seed
         for(auto &edge : graph.g[u]) {
             if(find(A.begin(), A.end(), edge.v) == A.end()) neighbour_size++;
         }
-        if(neighbour_size <= k) {
+        if(0 && neighbour_size <= k) {
             if(verbose_flag) cout << "\tparticipant " << u << " has has not exceeding k neighbours. Select all.\n";
             for(auto &edge : graph.g[u]) {
                 if(!selected[edge.v]) {
@@ -363,7 +363,7 @@ void advanced_CELF_method(Graph &graph, int k, vector<int> &A, vector<int> &seed
             num_neighbours[u]++;
             seeds.emplace_back(v);
             current_spread += mg;
-            if(verbose_flag) {
+            if(1) {
                 printf("\tnode = %d\tround = %d\ttime = %.5f\n", v, r, time_by(cur));
             }
         } else {
