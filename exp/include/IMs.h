@@ -37,8 +37,8 @@ void CELF(Graph &graph, int k, vector<int> &candidate, vector<int> &seeds) {
     seeds.resize(1);
     for (int u : candidate) {
         seeds[0] = u;
-        if(MG0[u] == 0) MG0[u] = MC_simulation(graph, seeds);
-        Q.push(make_pair(MG0[u], make_pair(u, 0)));
+        if(!local_mg) Q.push(make_pair(MC_simulation(graph, seeds), make_pair(u, 0)));
+        else Q.push(make_pair(MG0[u], make_pair(u, 0)));
     }
     double current_spread = 0;
     seeds.clear();
@@ -305,8 +305,8 @@ void advanced_CELF_method(Graph &graph, int k, vector<int> &A, vector<int> &seed
     seeds.resize(1);
     for (int u : S) {
         seeds[0] = u;
-        if(MG0[u] == 0) MG0[u] = MC_simulation(graph, seeds);
-        Q.push(make_pair(MG0[u], make_pair(u, 0)));
+        if(!local_mg) Q.push(make_pair(MC_simulation(graph, seeds), make_pair(u, 0)));
+        else Q.push(make_pair(MG0[u], make_pair(u, 0)));
     }
     double current_spread = 0;
     seeds.clear();

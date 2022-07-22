@@ -9,8 +9,6 @@
 #include <iostream>
 #include <algorithm>
 
-#define verbose_flag 1
-
 #define MAX_NODE_SIZE 20000
 #define graph_type int
 #define DIRECTED_G 0
@@ -36,6 +34,7 @@ std::minstd_rand random_engine(rd__());
 std::uniform_real_distribution<double> distrib(0.0, 1.0);
 
 std::ofstream out;
+int verbose_flag, local_mg;
 
 /*!
  * @brief Random number generator that generates real number between [0,1)

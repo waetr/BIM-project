@@ -6,6 +6,22 @@
 #define EXP_TOP_H
 
 #include "IMs.h"
+#include "argparse.h"
+
+void init_commandLine(int argc, char const *argv[]) {
+    auto args = util::argparser("The experiment of BIM.");
+    args.set_program_name("exp")
+            .add_help_option()
+            .add_option("-v", "--verbose", "output verbose message or not")
+            .add_option("-l", "--local", "use local value as single spread or not")
+            .parse(argc, argv);
+    if (args.has_option("--verbose")) {
+        verbose_flag = 1;
+    }
+    if (args.has_option("--local")) {
+        local_mg = 1;
+    }
+}
 
 double solvers(Graph &graph, int k, vector<int> &A, vector<int> &seeds, IM_solver solver) {
     double cur = clock();
@@ -55,12 +71,23 @@ double solvers(Graph &graph, int k, vector<int> &A, vector<int> &seeds, IM_solve
     return time_by(cur);
 }
 
-void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, vector<IM_solver> &solver_batch, model_type type, int rounds = 3) {
+void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, vector<IM_solver> &solver_batch, model_type type,
+                    int rounds = 3) {
     fstream file_eraser("../output/result.out", ios::out);
     file_eraser.close();
     out.open("../output/result.out", ios::app);
     //load graph from absolute path
     Graph G("../data/edges.csv", UNDIRECTED_G);
+
+    if (local_mg) {
+        ifstream inFile("../data/edges_mg.txt", ios::in);
+        if (!inFile.is_open()) {
+            std::cerr << "(get error) local file not found: edges_mg.txt" << std::endl;
+            std::exit(-1);
+        }
+        for (int u = 0; u < G.n; u++) inFile >> MG0[u];
+        inFile.close();
+    }
 
     //set diffusion model
     G.set_diffusion_model(type, 15);
@@ -72,7 +99,6 @@ void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, vector<IM_solver
 
     string solver_name[] = {"ENUMERATION", "DEGREE", "PAGERANK", "CELF", "DEGREE_ADVANCED", "PAGERANK_ADVANCED",
                             "CELF_ADVANCED"};
-
 
 
     int random_set[rounds][G.n];
@@ -87,7 +113,7 @@ void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, vector<IM_solver
         memset(timer, 0, sizeof(timer));
         for (int r_ = 1; r_ <= rounds; r_++) {
             A.clear();
-            for(int j = 0; j < A_size; j++) A.emplace_back(random_set[r_-1][j]);
+            for (int j = 0; j < A_size; j++) A.emplace_back(random_set[r_ - 1][j]);
             print_set(A, "active participant: "), puts("");
             print_set_f(A, "active participant: "), out << '\n';
             overlap_ratio += estimate_neighbor_overlap(G, A) / rounds;

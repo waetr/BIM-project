@@ -97,6 +97,10 @@ public:
     Graph(const string &filename, graph_type type) : Graph() {
         vector<pair<int, int>> edges;
         ifstream inFile(filename, ios::in);
+        if(!inFile.is_open()) {
+            std::cerr << "(get error) graph file not found: " << filename << std::endl;
+            std::exit(-1);
+        }
         string lineStr;
         while (getline(inFile, lineStr)) {
             stringstream ss(lineStr);

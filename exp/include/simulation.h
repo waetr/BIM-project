@@ -35,9 +35,9 @@ bool active[MAX_NODE_SIZE];
  * @param iteration_times : the number of rounds for MC simulations
  * @return the estimated value of influence spread
  */
-double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10000) {
+double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10) {
     double cur = clock();
-    long long meet_time = 0;
+    long long meet_time = 0; //Too large for int!
     vector<int> new_active, A, new_ones;
     vector<Edge> meet_nodes, meet_nodes_tmp;
     double res = 0;

@@ -1,0 +1,47 @@
+MODEL: TCIC deadline: 15
+Active participant size = 5
+Mean overlap ratio = 0.0783801
+	k = 1
+		seed quality of DEGREE = 17.3613 mean time = 3.23333e-05
+		seed quality of PAGERANK = 17.6829 mean time = 0.181546
+		seed quality of CELF = 21.1495 mean time = 115.71
+		seed quality of DEGREE_ADVANCED = 20.0545 mean time = 0.000344
+		seed quality of PAGERANK_ADVANCED = 20.4511 mean time = 0.179555
+		seed quality of CELF_ADVANCED = 23.7201 mean time = 35.2545
+	k = 2
+		seed quality of DEGREE = 31.847 mean time = 2.63333e-05
+		seed quality of PAGERANK = 31.1612 mean time = 0.17758
+		seed quality of CELF = 36.1749 mean time = 32.8698
+		seed quality of DEGREE_ADVANCED = 38.5577 mean time = 0.000349333
+		seed quality of PAGERANK_ADVANCED = 38.748 mean time = 0.177966
+		seed quality of CELF_ADVANCED = 41.2206 mean time = 161.707
+	k = 5
+		seed quality of DEGREE = 63.5149 mean time = 3.33333e-05
+		seed quality of PAGERANK = 64.3466 mean time = 0.179176
+		seed quality of CELF = 70.9739 mean time = 213.324
+		seed quality of DEGREE_ADVANCED = 76.6726 mean time = 0.000498
+		seed quality of PAGERANK_ADVANCED = 79.0954 mean time = 0.180681
+		seed quality of CELF_ADVANCED = 83.5789 mean time = 1341.17
+Active participant size = 10
+Mean overlap ratio = 0.16308
+	k = 1
+		seed quality of DEGREE = 26.4582 mean time = 5e-05
+		seed quality of PAGERANK = 25.4528 mean time = 0.175451
+		seed quality of CELF = 38.5507 mean time = 119.378
+		seed quality of DEGREE_ADVANCED = 38.7424 mean time = 0.00150567
+		seed quality of PAGERANK_ADVANCED = 39.4703 mean time = 0.177111
+		seed quality of CELF_ADVANCED = 49.7391 mean time = 146.394
+	k = 2
+		seed quality of DEGREE = 43.7761 mean time = 5.63333e-05
+		seed quality of PAGERANK = 40.7899 mean time = 0.17572
+		seed quality of CELF = 65.4715 mean time = 66.7365
+		seed quality of DEGREE_ADVANCED = 73.7448 mean time = 0.00144567
+		seed quality of PAGERANK_ADVANCED = 73.3478 mean time = 0.177479
+		seed quality of CELF_ADVANCED = 87.1768 mean time = 942.645
+	k = 5
+		seed quality of DEGREE = 91.2455 mean time = 6.3e-05
+		seed quality of PAGERANK = 92.3013 mean time = 0.176186
+		seed quality of CELF = 116.649 mean time = 497.786
+		seed quality of DEGREE_ADVANCED = 148.664 mean time = 0.001461
+		seed quality of PAGERANK_ADVANCED = 153.457 mean time = 0.178011
+		seed quality of CELF_ADVANCED = 169.234 mean time = 6432.4
