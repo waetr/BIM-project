@@ -1,21 +1,12 @@
 #include "argparse.h"
 #include "top.h"
 
-int main(int argc, char const *argv[])
-{
-    auto args = util::argparser("The experiment of BIM.");
-    args.set_program_name("exp")
-            .add_help_option()
-            .add_option("-v", "--verbose", "output verbose message or not")
-            .add_option("-l", "--local", "use local value as single spread or not")
-            .parse(argc, argv);
-    if(args.has_option("--verbose"))
-    {
-        verbose_flag = 1;
-    }
-    if(args.has_option("--local"))
-    {
-        local_mg = 1;
-    }
+int main(int argc, char const *argv[]){
+    init_commandLine(argc, argv);
+    Graph G("../data/test.csv", UNDIRECTED_G);
+    G.set_diffusion_model(IC_M, 15);
+    vector<int> A={3,6,5,2,1,0,8,7},seeds;
+    CELF_method(G,2,A,seeds);
+    print_set(seeds);
     return 0;
 }

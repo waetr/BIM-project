@@ -35,6 +35,7 @@ std::uniform_real_distribution<double> distrib(0.0, 1.0);
 
 std::ofstream out;
 int verbose_flag, local_mg;
+int MC_iteration_rounds = 10000;
 
 /*!
  * @brief Random number generator that generates real number between [0,1)

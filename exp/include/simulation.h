@@ -35,20 +35,20 @@ bool active[MAX_NODE_SIZE];
  * @param iteration_times : the number of rounds for MC simulations
  * @return the estimated value of influence spread
  */
-double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10) {
+double MC_simulation(Graph &graph, vector<int> &S) {
     double cur = clock();
     long long meet_time = 0; //Too large for int!
     vector<int> new_active, A, new_ones;
     vector<Edge> meet_nodes, meet_nodes_tmp;
     double res = 0;
-    for (int i = 1; i <= iteration_rounds; i++) {
+    for (int i = 1; i <= MC_iteration_rounds; i++) {
         if (graph.diff_model == IC) {
             new_active = S, A = S;
             for (int w : S) active[w] = true;
             new_ones.clear();
             while (!new_active.empty()) {
                 for (int u : new_active) {
-                    for (auto edge : graph.g[u]) {
+                    for (auto &edge : graph.g[u]) {
                         int v = edge.v;
                         if (active[v]) continue;
                         bool success = (random_real() < edge.p);
@@ -60,7 +60,7 @@ double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10) {
                 new_ones.clear();
             }
             for (int u : A) active[u] = false;
-            res += (double) A.size() / iteration_rounds;
+            res += (double) A.size() / MC_iteration_rounds;
             A.clear();
         } else if (graph.diff_model == IC_M) {
             meet_nodes.clear();
@@ -70,7 +70,7 @@ double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10) {
             while (spread_rounds < graph.deadline) {
                 spread_rounds++;
                 for (int u : new_active) {
-                    for (auto edge : graph.g[u]) {
+                    for (auto &edge : graph.g[u]) {
                         if (active[edge.v]) continue;
                         meet_nodes.emplace_back(edge);
                     }
@@ -79,7 +79,7 @@ double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10) {
                 new_active.clear();
                 if (meet_nodes.empty()) break;
                 meet_nodes_tmp.clear();
-                for (auto edge : meet_nodes) {
+                for (auto &edge : meet_nodes) {
                     if (!active[edge.v]) {
                         meet_time++;
                         bool meet_success = (random_real() < edge.m);
@@ -93,7 +93,7 @@ double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10) {
             }
             for (int u : new_active) A.emplace_back(u);
             for (int u : A) active[u] = false;
-            res += (double) A.size() / iteration_rounds;
+            res += (double) A.size() / MC_iteration_rounds;
             A.clear();
         }
     }
@@ -106,7 +106,7 @@ double MC_simulation(Graph &graph, vector<int> &S, int iteration_rounds = 10) {
  * @brief These global variables are used to assist the recursive functions.
  * No needs to be initialized.
  */
-int selected[MAX_NODE_SIZE];
+int node_selected[MAX_NODE_SIZE];
 int neighbour_selected[MAX_NODE_SIZE];
 int stack_kS[MAX_NODE_SIZE], stack_kS_top;
 
@@ -133,11 +133,11 @@ void select_neighbours(Graph &graph, vector<int> &S, vector<vector<int> > &V_n, 
     int u = *it;
     if (is_new) {
         if (it == S.begin())
-            for (int w : S) selected[w] = 2;
+            for (int w : S) node_selected[w] = 2;
         neighbour_selected[u] = 0;
         for (int i = 0; i < graph.g[u].size(); i++) {
             int v = graph.g[u][i].v;
-            if (selected[v] == 1) neighbour_selected[u]++;
+            if (node_selected[v] == 1) neighbour_selected[u]++;
         }
     }
     if (k_now == k0 || neighbour_selected[u] == graph.g[u].size()) {
@@ -145,20 +145,20 @@ void select_neighbours(Graph &graph, vector<int> &S, vector<vector<int> > &V_n, 
     } else {
         for (int i = i_now; i < graph.g[u].size(); i++) {
             int v = graph.g[u][i].v;
-            if (!selected[v]) {
-                selected[v] = 1;
+            if (!node_selected[v]) {
+                node_selected[v] = 1;
                 k_now++;
                 neighbour_selected[u]++;
                 stack_kS[++stack_kS_top] = v;
                 select_neighbours(graph, S, V_n, k0, k_now, i + 1, it, false);
-                selected[v] = 0;
+                node_selected[v] = 0;
                 k_now--;
                 neighbour_selected[u]--;
                 --stack_kS_top;
             }
         }
     }
-    if (is_new && it == S.begin()) for (int w : S) selected[w] = 0;
+    if (is_new && it == S.begin()) for (int w : S) node_selected[w] = 0;
 }
 
 /*!
@@ -173,10 +173,10 @@ double estimate_neighbor_overlap(Graph &graph, vector<int> &seeds) {
     double res = 0;
     int tot = 0, overlap = 0;
     for (int u : seeds)
-        for (auto e : graph.g[u])
+        for (auto &e : graph.g[u])
             num[e.v]++;
     for (int u : seeds) {
-        for (auto e : graph.g[u]) {
+        for (auto &e : graph.g[u]) {
             if (num[e.v] > 0) tot++;
             if (num[e.v] > 1) overlap++;
             num[e.v] = 0;

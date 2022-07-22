@@ -8,17 +8,11 @@ average meeting probability = 0.0574587
 
 ## 更新的内容
 
-所有点的single spread已经存储到本地文件data/edges_mg.txt.
+在advanced CELF部分加了一个trivival的优化：如果某个active participant的out neighbours不超过k个，那先把这些neighbours全部选上。
 
-新增了命令行参数识别工具，目前支持参数如下。
+增加了一些注释，调整了一些代码结构。
 
--?，--help，输出命令行帮助并退出程序。
-
--v，--verbose，在标准流输出verbose message。
-
--l，--local，采用本地的single spread。
-
-
+新增编译参数：-r，--rounds，MC simulation每次迭代的次数。默认为10000.
 
 ## 运行方法
 
@@ -202,3 +196,15 @@ Simulation result=114.294 time=129.433 meet time=9199051402
 当ap size = 10, k = 10时，advanced CELF需要计算最大size=100的set的MC simulation.
 
 相比option2的celf，只需要计算最大size=10的MC simulation.
+
+7/22
+
+所有点的single spread已经存储到本地文件data/edges_mg.txt.
+
+新增了命令行参数识别工具，目前支持参数如下。
+
+-?，--help，输出命令行帮助并退出程序。
+
+-v，--verbose，在标准流输出verbose message。
+
+-l，--local，采用本地的single spread。

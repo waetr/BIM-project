@@ -14,12 +14,19 @@ void init_commandLine(int argc, char const *argv[]) {
             .add_help_option()
             .add_option("-v", "--verbose", "output verbose message or not")
             .add_option("-l", "--local", "use local value as single spread or not")
+            .add_option<int>("-r", "--rounds", "number of MC simulation iterations per time, default is 10000", 10000)
             .parse(argc, argv);
     if (args.has_option("--verbose")) {
         verbose_flag = 1;
+        cout << "verbose flag set to 1\n";
     }
     if (args.has_option("--local")) {
         local_mg = 1;
+        cout << "local spread flag set to 1\n";
+    }
+    if (args.has_option("--rounds")) {
+        MC_iteration_rounds = args.get_option_int("--rounds");
+        cout << "MC_iteration_rounds set to " << MC_iteration_rounds << endl;
     }
 }
 
@@ -101,19 +108,12 @@ void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, vector<IM_solver
                             "CELF_ADVANCED"};
 
 
-    int random_set[rounds][G.n];
-    for (int i = 0; i < rounds; i++) {
-        for (int j = 0; j < G.n; j++) random_set[i][j] = j;
-        shuffle(random_set[i], random_set[i] + G.n, std::mt19937(std::random_device()()));
-    }
-
     for (int A_size : A_batch) {
         double overlap_ratio = 0;
         memset(result, 0, sizeof(result));
         memset(timer, 0, sizeof(timer));
         for (int r_ = 1; r_ <= rounds; r_++) {
-            A.clear();
-            for (int j = 0; j < A_size; j++) A.emplace_back(random_set[r_ - 1][j]);
+            generate_seed(G, A, A_size);
             print_set(A, "active participant: "), puts("");
             print_set_f(A, "active participant: "), out << '\n';
             overlap_ratio += estimate_neighbor_overlap(G, A) / rounds;
