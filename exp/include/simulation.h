@@ -18,8 +18,9 @@
 void generate_seed(Graph &graph, vector<int> &S, int size = 1) {
     S.clear();
     int *tmp = new int[graph.n];
-    for (int i = 0; i < graph.n; i++) tmp[i] = i;
-    srand((unsigned) time(nullptr));
+    for (int i = 0; i < graph.n; i++) {
+        tmp[i] = i;
+    }
     shuffle(tmp, tmp + graph.n, std::mt19937(std::random_device()()));
     for (int i = 0; i < size; i++) S.emplace_back(tmp[i]);
     delete[] tmp;
@@ -32,7 +33,6 @@ bool active[MAX_NODE_SIZE];
  * @brief run MC simulation to evaluate the influence spread.
  * @param graph : the graph that define propagation models(IC)
  * @param S : the seed set
- * @param iteration_times : the number of rounds for MC simulations
  * @return the estimated value of influence spread
  */
 double MC_simulation(Graph &graph, vector<int> &S) {
@@ -66,9 +66,7 @@ double MC_simulation(Graph &graph, vector<int> &S) {
             meet_nodes.clear();
             new_active = S;
             for (int w : S) active[w] = true;
-            int spread_rounds = 0;
-            while (spread_rounds < graph.deadline) {
-                spread_rounds++;
+            for (int spread_rounds = 0; spread_rounds < graph.deadline; spread_rounds++) {
                 for (int u : new_active) {
                     for (auto &edge : graph.g[u]) {
                         if (active[edge.v]) continue;
@@ -85,8 +83,13 @@ double MC_simulation(Graph &graph, vector<int> &S) {
                         bool meet_success = (random_real() < edge.m);
                         if (meet_success) {
                             bool activate_success = (random_real() < edge.p);
-                            if (activate_success) new_active.emplace_back(edge.v), active[edge.v] = true;
-                        } else meet_nodes_tmp.emplace_back(edge);
+                            if (activate_success) {
+                                new_active.emplace_back(edge.v);
+                                active[edge.v] = true;
+                            }
+                        } else {
+                            meet_nodes_tmp.emplace_back(edge);
+                        }
                     }
                 }
                 meet_nodes = meet_nodes_tmp;

@@ -40,7 +40,7 @@ public:
      * @param g : adjacency list
      */
     int n, m, deadline;
-    vector<vector<Edge> > g;
+    vector<vector<Edge> > g, gT;
     vector<int> deg_in, deg_out;
     model_type diff_model;
 
@@ -50,6 +50,7 @@ public:
     Graph() {
         n = m = deadline = 0;
         g.clear();
+        gT.clear();
         diff_model = NONE;
     }
 
@@ -67,6 +68,7 @@ public:
         deadline = g.deadline;
         diff_model = g.diff_model;
         this->g = g.g;
+        this->gT = g.gT;
         this->deg_in = g.deg_in;
         this->deg_out = g.deg_out;
     }
@@ -81,6 +83,7 @@ public:
         n = max(n, max(source, target) + 1);
         while (g.size() < n) {
             g.emplace_back(gg);
+            gT.emplace_back(gg);
             deg_in.emplace_back(0);
             deg_out.emplace_back(0);
         }
@@ -88,6 +91,7 @@ public:
         deg_in[target]++;
         deg_out[source]++;
         g[source].emplace_back(Edge(target, weight, weight));
+        gT[target].emplace_back(Edge(source, weight, weight));
     }
 
     /*!
@@ -143,8 +147,14 @@ public:
                     num_edges++;
                 }
             }
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < gT[i].size(); j++){
+                    gT[i][j].p = 1.0 / deg_in[i];
+                    gT[i][j].m = 5.0 / (5.0 + deg_out[g[i][j].v]);
+                }
+            }
             deadline = new_deadline;
-            if(verbose_flag) cout << "average m = " << sum_m / num_edges << endl;
+            if(verbose_flag) cout << "average meeting probability = " << sum_m / num_edges << endl;
         }
     }
 };

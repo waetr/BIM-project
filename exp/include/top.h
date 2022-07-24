@@ -7,6 +7,7 @@
 
 #include "IMs.h"
 #include "argparse.h"
+#include "IMM.h"
 
 void init_commandLine(int argc, char const *argv[]) {
     auto args = util::argparser("The experiment of BIM.");
