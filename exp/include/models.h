@@ -28,6 +28,7 @@
 #define DEGREE_ADVANCED 4
 #define PAGERANK_ADVANCED 5
 #define CELF_ADVANCED 6
+#define IMM_NORMAL 7
 
 std::random_device rd__;
 std::minstd_rand random_engine(rd__());

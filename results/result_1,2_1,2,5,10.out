@@ -1,0 +1,234 @@
+active participant: {4294}[1]
+Working on A_size = 1, round = 1, k = 1
+ Seed set using degree: {4838}[1]
+ Seed set using pagerank: {4838}[1]
+ Seed set using CELF: {8910}[1]
+ Seed set using ADVANCED degree: {4838}[1]
+ Seed set using ADVANCED pagerank: {4838}[1]
+ Seed set using ADVANCED CELF: {8910}[1]
+Working on A_size = 1, round = 1, k = 2
+ Seed set using degree: {4838,8156}[2]
+ Seed set using pagerank: {4838,8156}[2]
+ Seed set using CELF: {8269,8910}[2]
+ Seed set using ADVANCED degree: {4838,8156}[2]
+ Seed set using ADVANCED pagerank: {4838,8156}[2]
+ Seed set using ADVANCED CELF: {8269,8910}[2]
+Working on A_size = 1, round = 1, k = 5
+ Seed set using degree: {1225,4838,4983,4996,8156}[5]
+ Seed set using pagerank: {1225,3197,4838,4996,8156}[5]
+ Seed set using CELF: {232,3560,8156,8269,8910}[5]
+ Seed set using ADVANCED degree: {1225,4838,4983,4996,8156}[5]
+ Seed set using ADVANCED pagerank: {1225,3197,4838,4996,8156}[5]
+ Seed set using ADVANCED CELF: {232,3560,8156,8269,8910}[5]
+Working on A_size = 1, round = 1, k = 10
+ Seed set using degree: {232,445,738,1225,2520,3197,4838,4983,4996,8156}[10]
+ Seed set using pagerank: {232,445,1225,2520,3197,3560,4838,4983,4996,8156}[10]
+ Seed set using CELF: {232,738,866,1225,3197,3560,4838,8156,8269,8910}[10]
+ Seed set using ADVANCED degree: {232,445,738,1225,2520,3197,4838,4983,4996,8156}[10]
+ Seed set using ADVANCED pagerank: {232,445,1225,2520,3197,3560,4838,4983,4996,8156}[10]
+ Seed set using ADVANCED CELF: {232,738,866,1225,3197,3560,3829,8156,8269,8910}[10]
+active participant: {1933}[1]
+Working on A_size = 1, round = 2, k = 1
+ Seed set using degree: {175}[1]
+ Seed set using pagerank: {175}[1]
+ Seed set using CELF: {1931}[1]
+ Seed set using ADVANCED degree: {175}[1]
+ Seed set using ADVANCED pagerank: {175}[1]
+ Seed set using ADVANCED CELF: {1931}[1]
+Working on A_size = 1, round = 2, k = 2
+ Seed set using degree: {175,644}[2]
+ Seed set using pagerank: {175,644}[2]
+ Seed set using CELF: {644,1931}[2]
+ Seed set using ADVANCED degree: {175,644}[2]
+ Seed set using ADVANCED pagerank: {175,644}[2]
+ Seed set using ADVANCED CELF: {644,1931}[2]
+Working on A_size = 1, round = 2, k = 5
+ Seed set using degree: {175,232,445,644,3338}[5]
+ Seed set using pagerank: {175,232,445,644,1931}[5]
+ Seed set using CELF: {175,232,644,1931,5449}[5]
+ Seed set using ADVANCED degree: {175,232,445,644,3338}[5]
+ Seed set using ADVANCED pagerank: {175,232,445,644,1931}[5]
+ Seed set using ADVANCED CELF: {175,232,644,1931,5449}[5]
+Working on A_size = 1, round = 2, k = 10
+ Seed set using degree: {175,218,232,445,644,1931,3121,3257,3338,5449}[10]
+ Seed set using pagerank: {175,218,232,445,644,1931,3121,3257,3338,5449}[10]
+ Seed set using CELF: {175,232,445,644,1931,2404,3121,3257,3338,5449}[10]
+ Seed set using ADVANCED degree: {175,218,232,445,644,1931,3121,3257,3338,5449}[10]
+ Seed set using ADVANCED pagerank: {175,218,232,445,644,1931,3121,3257,3338,5449}[10]
+ Seed set using ADVANCED CELF: {175,232,445,644,1931,2404,3121,3257,3338,5449}[10]
+active participant: {378}[1]
+Working on A_size = 1, round = 3, k = 1
+ Seed set using degree: {4838}[1]
+ Seed set using pagerank: {175}[1]
+ Seed set using CELF: {644}[1]
+ Seed set using ADVANCED degree: {4838}[1]
+ Seed set using ADVANCED pagerank: {175}[1]
+ Seed set using ADVANCED CELF: {644}[1]
+Working on A_size = 1, round = 3, k = 2
+ Seed set using degree: {175,4838}[2]
+ Seed set using pagerank: {175,4838}[2]
+ Seed set using CELF: {644,8269}[2]
+ Seed set using ADVANCED degree: {175,4838}[2]
+ Seed set using ADVANCED pagerank: {175,4838}[2]
+ Seed set using ADVANCED CELF: {644,8269}[2]
+Working on A_size = 1, round = 3, k = 5
+ Seed set using degree: {175,644,1225,4838,4983}[5]
+ Seed set using pagerank: {175,644,1225,3197,4838}[5]
+ Seed set using CELF: {232,644,8269,9187,9918}[5]
+ Seed set using ADVANCED degree: {175,644,1225,4838,4983}[5]
+ Seed set using ADVANCED pagerank: {175,644,1225,3197,4838}[5]
+ Seed set using ADVANCED CELF: {232,644,8269,9187,9918}[5]
+Working on A_size = 1, round = 3, k = 10
+ Seed set using degree: {175,445,644,666,1225,2520,3197,4838,4983,7097}[10]
+ Seed set using pagerank: {175,232,445,644,1225,3197,4838,4983,7097,9918}[10]
+ Seed set using CELF: {175,232,644,738,1225,3197,4838,8269,9187,9918}[10]
+ Seed set using ADVANCED degree: {175,445,644,666,1225,2520,3197,4838,4983,7097}[10]
+ Seed set using ADVANCED pagerank: {175,232,445,644,1225,3197,4838,4983,7097,9918}[10]
+ Seed set using ADVANCED CELF: {175,232,644,738,1225,3197,4838,8269,9187,9918}[10]
+Active participant size = 1
+Mean overlap ratio = 0
+	k = 1
+		seed quality of DEGREE = 3.78213 mean time = 1.93333e-05
+		seed quality of PAGERANK = 3.8718 mean time = 0.219605
+		seed quality of CELF = 6.91787 mean time = 3.83333e-05
+		seed quality of DEGREE_ADVANCED = 3.7892 mean time = 0.000258667
+		seed quality of PAGERANK_ADVANCED = 3.8568 mean time = 0.220556
+		seed quality of CELF_ADVANCED = 6.86287 mean time = 0.000294333
+	k = 2
+		seed quality of DEGREE = 7.9474 mean time = 1.56667e-05
+		seed quality of PAGERANK = 7.97173 mean time = 0.21943
+		seed quality of CELF = 11.3799 mean time = 6.415
+		seed quality of DEGREE_ADVANCED = 7.97687 mean time = 0.000272667
+		seed quality of PAGERANK_ADVANCED = 7.97307 mean time = 0.219451
+		seed quality of CELF_ADVANCED = 11.4008 mean time = 6.41753
+	k = 5
+		seed quality of DEGREE = 19.2939 mean time = 2.26667e-05
+		seed quality of PAGERANK = 21.8489 mean time = 0.219933
+		seed quality of CELF = 23.9578 mean time = 50.5787
+		seed quality of DEGREE_ADVANCED = 19.2805 mean time = 0.000284333
+		seed quality of PAGERANK_ADVANCED = 21.8498 mean time = 0.219339
+		seed quality of CELF_ADVANCED = 23.9263 mean time = 50.6432
+	k = 10
+		seed quality of DEGREE = 39.0604 mean time = 2.46667e-05
+		seed quality of PAGERANK = 39.5639 mean time = 0.21931
+		seed quality of CELF = 41.8668 mean time = 240.926
+		seed quality of DEGREE_ADVANCED = 39.0436 mean time = 0.000271333
+		seed quality of PAGERANK_ADVANCED = 39.5647 mean time = 0.219133
+		seed quality of CELF_ADVANCED = 41.8546 mean time = 231.134
+active participant: {5661,8731}[2]
+Working on A_size = 2, round = 1, k = 1
+ Seed set using degree: {175,4373}[2]
+ Seed set using pagerank: {175,4373}[2]
+ Seed set using CELF: {8156,8858}[2]
+ Seed set using ADVANCED degree: {175,4373}[2]
+ Seed set using ADVANCED pagerank: {175,4373}[2]
+ Seed set using ADVANCED CELF: {8156,8858}[2]
+Working on A_size = 2, round = 1, k = 2
+ Seed set using degree: {175,4373,8156,8858}[4]
+ Seed set using pagerank: {175,4373,8156,8858}[4]
+ Seed set using CELF: {175,8156,8858,9918}[4]
+ Seed set using ADVANCED degree: {175,4373,8156,8858}[4]
+ Seed set using ADVANCED pagerank: {175,4373,8156,8858}[4]
+ Seed set using ADVANCED CELF: {175,8156,8858,9918}[4]
+Working on A_size = 2, round = 1, k = 5
+ Seed set using degree: {175,666,2520,4373,7097,7372,8156,8858,9525,9918}[10]
+ Seed set using pagerank: {175,666,2520,4373,7097,7372,8156,8858,9525,9918}[10]
+ Seed set using CELF: {175,448,666,1008,4651,8156,8301,8858,9187,9918}[10]
+ Seed set using ADVANCED degree: {175,666,2520,4373,7097,7372,8156,8858,9525,9918}[10]
+ Seed set using ADVANCED pagerank: {175,666,2520,4373,7097,7372,8156,8858,9525,9918}[10]
+ Seed set using ADVANCED CELF: {175,448,666,1008,4651,8156,8301,8858,9187,9918}[10]
+Working on A_size = 2, round = 1, k = 10
+ Seed set using degree: {175,448,666,1008,1680,2240,2520,3899,4373,4651,5680,7097,7372,8156,8301,8858,9187,9525,9918}[19]
+ Seed set using pagerank: {175,448,666,1008,1680,2240,2520,3899,4373,4651,5680,7097,7372,8156,8301,8858,9187,9525,9918}[19]
+ Seed set using CELF: {175,448,666,1008,1680,2520,4373,4651,5680,7097,7372,8156,8301,8858,8867,9187,9419,9525,9547,9918}[20]
+ Seed set using ADVANCED degree: {175,448,666,1008,1680,2240,2520,3899,4373,4651,5680,7097,7372,8156,8301,8858,9187,9525,9547,9918}[20]
+ Seed set using ADVANCED pagerank: {175,448,666,1008,1680,2240,2520,3899,4373,4651,5680,7097,7372,8156,8301,8858,8867,9187,9525,9918}[20]
+ Seed set using ADVANCED CELF: {175,448,666,1008,1680,2240,2520,3899,4373,4651,5680,7097,7372,8156,8301,8858,8867,9187,9525,9918}[20]
+active participant: {4768,8333}[2]
+Working on A_size = 2, round = 2, k = 1
+ Seed set using degree: {175,8858}[2]
+ Seed set using pagerank: {175,8858}[2]
+ Seed set using CELF: {1931,8269}[2]
+ Seed set using ADVANCED degree: {175,8858}[2]
+ Seed set using ADVANCED pagerank: {175,8858}[2]
+ Seed set using ADVANCED CELF: {1931,8269}[2]
+Working on A_size = 2, round = 2, k = 2
+ Seed set using degree: {175,1931,7805,8858}[4]
+ Seed set using pagerank: {175,1931,7805,8858}[4]
+ Seed set using CELF: {1931,4671,8269,9918}[4]
+ Seed set using ADVANCED degree: {175,1931,7805,8858}[4]
+ Seed set using ADVANCED pagerank: {175,1931,7805,8858}[4]
+ Seed set using ADVANCED CELF: {1931,4671,8269,9918}[4]
+Working on A_size = 2, round = 2, k = 5
+ Seed set using degree: {175,738,1931,4651,4671,6732,7805,8344,8858,9918}[10]
+ Seed set using pagerank: {175,738,1931,4651,4671,6732,7805,8344,8858,9918}[10]
+ Seed set using CELF: {175,738,1931,4651,4671,6732,8269,8344,8858,9918}[10]
+ Seed set using ADVANCED degree: {175,738,1931,4651,4671,6732,7805,8344,8858,9918}[10]
+ Seed set using ADVANCED pagerank: {175,738,1931,4651,4671,6732,7805,8344,8858,9918}[10]
+ Seed set using ADVANCED CELF: {175,738,1931,4651,4671,8269,8344,8858,9918,10240}[10]
+Working on A_size = 2, round = 2, k = 10
+ Seed set using degree: {175,738,1931,4651,4671,6732,6958,7805,8269,8344,8858,9918,10240}[13]
+ Seed set using pagerank: {175,738,1931,4651,4671,6732,6958,7805,8269,8344,8858,9918,10240}[13]
+ Seed set using CELF: {175,738,1931,4651,4671,6732,6958,7805,8269,8344,8858,9918,10240}[13]
+ Seed set using ADVANCED degree: {175,738,1931,4651,4671,6732,6958,7805,8269,8344,8858,9918,10240}[13]
+ Seed set using ADVANCED pagerank: {175,738,1931,4651,4671,6732,6958,7805,8269,8344,8858,9918,10240}[13]
+ Seed set using ADVANCED CELF: {175,738,1931,4651,4671,6732,6958,7805,8269,8344,8858,9918,10240}[13]
+active participant: {1053,7765}[2]
+Working on A_size = 2, round = 3, k = 1
+ Seed set using degree: {4373,8156}[2]
+ Seed set using pagerank: {4373,8156}[2]
+ Seed set using CELF: {1931,6140}[2]
+ Seed set using ADVANCED degree: {4373,8156}[2]
+ Seed set using ADVANCED pagerank: {4373,8156}[2]
+ Seed set using ADVANCED CELF: {1931,6140}[2]
+Working on A_size = 2, round = 3, k = 2
+ Seed set using degree: {3525,4373,8156}[3]
+ Seed set using pagerank: {3525,4373,8156}[3]
+ Seed set using CELF: {1931,6140,8156}[3]
+ Seed set using ADVANCED degree: {2520,3525,4373,8156}[4]
+ Seed set using ADVANCED pagerank: {1008,3525,4373,8156}[4]
+ Seed set using ADVANCED CELF: {1008,1931,6140,8156}[4]
+Working on A_size = 2, round = 3, k = 5
+ Seed set using degree: {1008,2520,3525,4373,5905,6140,7988,8156,8301}[9]
+ Seed set using pagerank: {1008,1931,2520,3525,4373,6140,7988,8156,8301}[9]
+ Seed set using CELF: {1008,1931,2520,3525,4373,6140,7988,8156,8301}[9]
+ Seed set using ADVANCED degree: {1008,1931,2520,3525,4373,5905,6140,7988,8156,8301}[10]
+ Seed set using ADVANCED pagerank: {1008,1931,2520,3525,4373,5905,6140,7988,8156,8301}[10]
+ Seed set using ADVANCED CELF: {1008,1931,2520,3525,4373,6029,6140,7988,8156,8301}[10]
+Working on A_size = 2, round = 3, k = 10
+ Seed set using degree: {1008,1875,1931,2326,2520,3113,3525,4373,5905,6029,6140,6434,7131,7304,7988,8156,8301,8440,8735}[19]
+ Seed set using pagerank: {1008,1875,1931,2326,2520,3113,3525,4373,5905,6029,6140,6434,7131,7304,7988,8156,8301,8440,8735}[19]
+ Seed set using CELF: {857,1008,1875,1931,2326,2520,3525,4373,5905,6029,6140,6434,7131,7304,7988,8156,8301,8440,8735}[19]
+ Seed set using ADVANCED degree: {1008,1875,1931,2326,2520,3113,3525,4373,5905,6029,6140,6434,7131,7304,7988,8156,8301,8386,8440,8735}[20]
+ Seed set using ADVANCED pagerank: {1008,1875,1931,2326,2520,3113,3525,4373,5905,6029,6140,6434,7131,7304,7988,8156,8301,8386,8440,8735}[20]
+ Seed set using ADVANCED CELF: {857,1008,1875,1931,2326,2520,3525,4373,5905,6029,6140,6434,7131,7304,7988,8156,8301,8386,8440,8735}[20]
+Active participant size = 2
+Mean overlap ratio = 0.0253968
+	k = 1
+		seed quality of DEGREE = 8.06223 mean time = 1.1e-05
+		seed quality of PAGERANK = 8.06457 mean time = 0.218685
+		seed quality of CELF = 12.8068 mean time = 3.66667e-05
+		seed quality of DEGREE_ADVANCED = 8.0844 mean time = 0.000138
+		seed quality of PAGERANK_ADVANCED = 8.0455 mean time = 0.2191
+		seed quality of CELF_ADVANCED = 12.8015 mean time = 6.37492
+	k = 2
+		seed quality of DEGREE = 16.7554 mean time = 1.63333e-05
+		seed quality of PAGERANK = 16.7341 mean time = 0.218802
+		seed quality of CELF = 20.0313 mean time = 15.4634
+		seed quality of DEGREE_ADVANCED = 17.9213 mean time = 0.000144667
+		seed quality of PAGERANK_ADVANCED = 18.0382 mean time = 0.219179
+		seed quality of CELF_ADVANCED = 21.4124 mean time = 29.3635
+	k = 5
+		seed quality of DEGREE = 37.6296 mean time = 2.46667e-05
+		seed quality of PAGERANK = 40.1185 mean time = 0.218946
+		seed quality of CELF = 41.1418 mean time = 105.097
+		seed quality of DEGREE_ADVANCED = 41.0272 mean time = 0.000149333
+		seed quality of PAGERANK_ADVANCED = 41.075 mean time = 0.218826
+		seed quality of CELF_ADVANCED = 42.0538 mean time = 206.08
+	k = 10
+		seed quality of DEGREE = 62.1814 mean time = 2.56667e-05
+		seed quality of PAGERANK = 62.2918 mean time = 0.218949
+		seed quality of CELF = 63.3405 mean time = 305.571
+		seed quality of DEGREE_ADVANCED = 63.7638 mean time = 0.000149
+		seed quality of PAGERANK_ADVANCED = 64.1944 mean time = 0.219117
+		seed quality of CELF_ADVANCED = 64.2712 mean time = 850.911

@@ -8,91 +8,34 @@ average meeting probability = 0.0574587
 
 ## 更新的内容
 
-7/22
+实现了*IMM Algorithm*，并实现了option 2的IMM版本。调用方式参考main.cpp与test.cpp。
 
-所有点的single spread已经存储到本地文件data/edges_mg.txt.
+option2思路：在IMM算法的NodeSelection部分， 将"Identify the vertex $v$"的取值范围设为$\N_{a_i}$(active participant的neighbour set)，其余不变。
 
-新增了命令行参数识别工具，目前支持参数如下。
+性能测试：
 
--?，--help，输出命令行帮助并退出程序。
-
--v，--verbose，在标准流输出verbose message。
-
--l，--local，采用本地的single spread。
-
-7/23
-
-增加了一些注释，调整了一些代码结构。
-
-新增编译参数：-r，--rounds，MC simulation每次迭代的次数。
-
-2022/7/25 1：00
-
-新增IMM.h，内有所有IMM相关方法。
-
-目前已经实现的方法：
-
-1. RI_Gen: 生成一个RI set或者FI set
-2. NodeSelection: 用贪心算法，返回对$\R$的maximum coverage problem的解：点集$S_k$（未debug）
-3. FI_simulation: 用FI sketch来近似估计$\sigma(S)$
-
-还剩下的方法：
-
-1. Sampling: 确定需要生成的$\R$的大小，并生成足够多的RI set
-
-2. IMM Algorithm
+1. 用IMM计算全图IM，并与CELF比较。
 
    ```pseudocode
-   Procedure: IMM(G, k, e, l)
-   begin procedure
-   	l = l * (1 + log(2) / log(n))
-   	R = Sampling(G, k, e, l)
-   	S* = NodeSelection(R, k)
-   	return S*
-   end procedure
+   CLEF set = {1463,1931,2235,2802,4671,7111,8094,8910,9132,9422}[10] CELF result = 63.9031 time = 46.172
+   IMM set = {1463,1823,1931,2235,2802,4671,8094,8910,9132,9422}[10] IMM result = 63.6642 time = 5.875
    ```
 
-性能：
+   IMM算法与CELF较为接近，且耗时很少。
 
-RI_Gen的复杂度为$O(n^*logn^*+m^*)$，其中$n^*$和$m^*$为在集合中被激活的节点数和相关边数。
+2. 用IMM-option 2计算BIM，并与CELF-option 2比较。
 
-基于RI_Gen的FI simulation与MC simulation对比，结果准确度相同，并且FI simulation的runtime一般为MC simulation的$\frac{1}{10}$.
+   ```pseudocode
+   AP size = 5
+   k = 2
+    CELF result = 37.4323 time = 30.7017
+    IMM result = 37.034 time = 9.25
+   k = 5
+    CELF result = 70.2914 time = 202.929
+    IMM result = 74.157 time = 9.359
+   ```
 
-**截至目前的所有实验结果在根目录的results文件夹。**
-
-**当ap size=10,k=10时，CELF advanced已经非常的慢了(result_10_10.out, 总时长约24小时)。**
-
-*意见：如果要继续做ap size更大的部分，可以考虑用更快的FI sim代替MC sim?*
-
-## Some Inquiry
-
-1. 尝试在advanced CELF部分加了一个trivival的优化：如果某个active participant的out neighbours不超过k个，那先把这些neighbours全部选上。
-
-乍一看，貌似提前帮选好了很多节点；然而实际的实验结果如下(simulation time = 100)
-
-```bash
-Before optimization:
-Initial time = 0, max round = 95, time = 13.202
-After optimization:
-Initial time = 30.124, max round = 352, time = 128.374
-```
-
-变成了完全的负优化。
-
-分析：提前选出一些节点后，initialization部分算的就不是单独点的$\sigma(\{u\})$，而是$\sigma(\{S\cup u\})$，开销大大增加；
-
-并且margimal influence随着seed的下降梯度变得很不平滑，导致CELF迭代的次数变大。
-
-
-## 运行方法
-
-```bash
-cd exp
-mkdir build && cd build
-cmake ..
-make
-./exp [-? -v -l -r 10000]
-```
+   IMM-option2的耗时很少，且与CELF-option2结果较接近；某些情况下解质量甚至超过了CELF-option2.
 
 
 
@@ -267,3 +210,61 @@ Simulation result=114.294 time=129.433 meet time=9199051402
 当ap size = 10, k = 10时，advanced CELF需要计算最大size=100的set的MC simulation.
 
 相比option2的celf，只需要计算最大size=10的MC simulation.
+
+
+
+7/22
+
+所有点的single spread已经存储到本地文件data/edges_mg.txt.
+
+新增了命令行参数识别工具，目前支持参数如下。
+
+-?，--help，输出命令行帮助并退出程序。
+
+-v，--verbose，在标准流输出verbose message。
+
+-l，--local，采用本地的single spread。
+
+7/23
+
+增加了一些注释，调整了一些代码结构。
+
+新增编译参数：-r，--rounds，MC simulation每次迭代的次数。
+
+2022/7/25 1：00
+
+新增IMM.h，内有所有IMM相关方法。
+
+目前已经实现的方法：
+
+1. RI_Gen: 生成一个RI set或者FI set
+2. NodeSelection: 用贪心算法，返回对$\R$的maximum coverage problem的解：点集$S_k$（未debug）
+3. FI_simulation: 用FI sketch来近似估计$\sigma(S)$
+
+还剩下的方法：
+
+1. Sampling: 确定需要生成的$\R$的大小，并生成足够多的RI set
+
+2. IMM Algorithm
+
+   ```pseudocode
+   Procedure: IMM(G, k, e, l)
+   begin procedure
+   	l = l * (1 + log(2) / log(n))
+   	R = Sampling(G, k, e, l)
+   	S* = NodeSelection(R, k)
+   	return S*
+   end procedure
+   ```
+
+性能：
+
+RI_Gen的复杂度为$O(n^*logn^*+m^*)$，其中$n^*$和$m^*$为在集合中被激活的节点数和相关边数。
+
+基于RI_Gen的FI simulation与MC simulation对比，结果准确度相同，并且FI simulation的runtime一般为MC simulation的$\frac{1}{10}$.
+
+**截至目前的所有实验结果在根目录的results文件夹。**
+
+**当ap size=10,k=10时，CELF advanced已经非常的慢了(result_10_10.out, 总时长约24小时)。**
+
+*意见：如果要继续做ap size更大的部分，可以考虑用更快的FI sim代替MC sim?*

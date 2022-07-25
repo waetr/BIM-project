@@ -24,6 +24,14 @@ void init_commandLine(int argc, char const *argv[]) {
     if (args.has_option("--local")) {
         local_mg = 1;
         cout << "local spread flag set to 1\n";
+        ifstream inFile("../data/edges_mg.txt", ios::in);
+        if (!inFile.is_open()) {
+            std::cerr << "(get error) local file not found: edges_mg.txt" << std::endl;
+            std::exit(-1);
+        }
+        int cnt = 0;
+        while (inFile.good()) inFile >> MG0[cnt++];
+        inFile.close();
     }
     if (args.has_option("--rounds")) {
         MC_iteration_rounds = args.get_option_int("--rounds");
@@ -70,6 +78,11 @@ double solvers(Graph &graph, int k, vector<int> &A, vector<int> &seeds, IM_solve
             print_set(seeds, " Seed set using ADVANCED CELF: ");
             print_set_f(seeds, " Seed set using ADVANCED CELF: ");
             break;
+        case IMM_NORMAL:
+            IMM_method(graph, k, A, seeds);
+            print_set(seeds, " Seed set using IMM: ");
+            print_set_f(seeds, " Seed set using IMM: ");
+            break;
         default:
             break;
     }
@@ -87,26 +100,16 @@ void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, vector<IM_solver
     //load graph from absolute path
     Graph G("../data/edges.csv", UNDIRECTED_G);
 
-    if (local_mg) {
-        ifstream inFile("../data/edges_mg.txt", ios::in);
-        if (!inFile.is_open()) {
-            std::cerr << "(get error) local file not found: edges_mg.txt" << std::endl;
-            std::exit(-1);
-        }
-        for (int u = 0; u < G.n; u++) inFile >> MG0[u];
-        inFile.close();
-    }
-
     //set diffusion model
     G.set_diffusion_model(type, 15);
 
     //Instantiate the active participant set A and seed set
     vector<int> A, seeds;
 
-    double result[7][100], timer[7][100];
+    double result[12][100], timer[12][100];
 
     string solver_name[] = {"ENUMERATION", "DEGREE", "PAGERANK", "CELF", "DEGREE_ADVANCED", "PAGERANK_ADVANCED",
-                            "CELF_ADVANCED"};
+                            "CELF_ADVANCED", "IMM_NORMAL"};
 
 
     for (int A_size : A_batch) {

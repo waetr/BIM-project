@@ -48,7 +48,7 @@ void CELF(Graph &graph, int k, vector<int> &candidate, vector<int> &seeds) {
         node0 u = Q.top();
         Q.pop();
         if (u.second.second == seeds.size()) {
-            if(verbose_flag) printf("\tnode = %d\tround = %d\ttime = %.5f\n", u.second.first, r, time_by(cur));
+            if(verbose_flag) printf("\tnode = %d\tround = %d\ttime = %.3f MG = %.3f\n", u.second.first, r, time_by(cur), u.first);
             seeds.emplace_back(u.second.first);
             current_spread += u.first;
         } else {
