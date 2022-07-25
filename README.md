@@ -6,6 +6,16 @@
 
 average meeting probability = 0.0574587
 
+## 编译与运行
+
+```bash
+cd exp
+mkdir build && cd build
+cmake ..
+make
+./exp [-? | -v | -l | -r 10000]
+```
+
 ## 更新的内容
 
 实现了*IMM Algorithm*，并实现了option 2的IMM版本。调用方式参考main.cpp与test.cpp。
