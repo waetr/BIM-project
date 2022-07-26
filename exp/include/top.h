@@ -15,7 +15,7 @@ void init_commandLine(int argc, char const *argv[]) {
             .add_help_option()
             .add_option("-v", "--verbose", "output verbose message or not")
             .add_option("-l", "--local", "use local value as single spread or not")
-            .add_option<int>("-r", "--rounds", "number of MC simulation iterations per time, default is 10000", 10000)
+            .add_option<int64>("-r", "--rounds", "number of MC simulation iterations per time, default is 10000", 10000)
             .parse(argc, argv);
     if (args.has_option("--verbose")) {
         verbose_flag = 1;
@@ -29,17 +29,17 @@ void init_commandLine(int argc, char const *argv[]) {
             std::cerr << "(get error) local file not found: edges_mg.txt" << std::endl;
             std::exit(-1);
         }
-        int cnt = 0;
+        int64 cnt = 0;
         while (inFile.good()) inFile >> MG0[cnt++];
         inFile.close();
     }
     if (args.has_option("--rounds")) {
-        MC_iteration_rounds = args.get_option_int("--rounds");
+        MC_iteration_rounds = args.get_option_int64("--rounds");
         cout << "MC_iteration_rounds set to " << MC_iteration_rounds << endl;
     }
 }
 
-double solvers(Graph &graph, int k, vector<int> &A, vector<int> &seeds, IM_solver solver) {
+double solvers(Graph &graph, int32 k, vector<node> &A, vector<node> &seeds, IM_solver solver) {
     double cur = clock();
     seeds.clear();
     switch (solver) {
@@ -92,8 +92,8 @@ double solvers(Graph &graph, int k, vector<int> &A, vector<int> &seeds, IM_solve
     return time_by(cur);
 }
 
-void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, vector<IM_solver> &solver_batch, model_type type,
-                    int rounds = 3) {
+void Run_simulation(vector<node> &A_batch, vector<int32> &k_batch, vector<IM_solver> &solver_batch, model_type type,
+                    int32 rounds = 3) {
     fstream file_eraser("../output/result.out", ios::out);
     file_eraser.close();
     out.open("../output/result.out", ios::app);
@@ -104,7 +104,7 @@ void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, vector<IM_solver
     G.set_diffusion_model(type, 15);
 
     //Instantiate the active participant set A and seed set
-    vector<int> A, seeds;
+    vector<node> A, seeds;
 
     double result[12][100], timer[12][100];
 
@@ -112,16 +112,16 @@ void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, vector<IM_solver
                             "CELF_ADVANCED", "IMM_NORMAL"};
 
 
-    for (int A_size : A_batch) {
+    for (node A_size : A_batch) {
         double overlap_ratio = 0;
         memset(result, 0, sizeof(result));
         memset(timer, 0, sizeof(timer));
-        for (int r_ = 1; r_ <= rounds; r_++) {
+        for (int32 r_ = 1; r_ <= rounds; r_++) {
             generate_seed(G, A, A_size);
             print_set(A, "active participant: "), puts("");
             print_set_f(A, "active participant: "), out << '\n';
             overlap_ratio += estimate_neighbor_overlap(G, A) / rounds;
-            for (int k : k_batch) {
+            for (int32 k : k_batch) {
                 printf("Working on A_size = %d, round = %d, k = %d\n", A_size, r_, k);
                 out << "Working on A_size = " << A_size << ", round = " << r_ << ", k = " << k << endl;
                 for (IM_solver solver_used : solver_batch) {
@@ -134,7 +134,7 @@ void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, vector<IM_solver
 
         cout << "Active participant size = " << A_size << endl;
         cout << "Mean overlap ratio = " << overlap_ratio << endl;
-        for (int k : k_batch) {
+        for (int32 k : k_batch) {
             cout << "\tk = " << k << endl;
             for (IM_solver solver_used : solver_batch) {
                 cout << "\t\tseed quality of " << solver_name[solver_used] << " = " << result[solver_used][k];
@@ -144,7 +144,7 @@ void Run_simulation(vector<int> &A_batch, vector<int> &k_batch, vector<IM_solver
 
         out << "Active participant size = " << A_size << endl;
         out << "Mean overlap ratio = " << overlap_ratio << endl;
-        for (int k : k_batch) {
+        for (int32 k : k_batch) {
             out << "\tk = " << k << endl;
             for (IM_solver solver_used : solver_batch) {
                 out << "\t\tseed quality of " << solver_name[solver_used] << " = " << result[solver_used][k];

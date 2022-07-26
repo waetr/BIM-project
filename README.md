@@ -8,6 +8,10 @@ average meeting probability = 0.0574587
 
 ## 编译与运行
 
+需要修改的内容：models.h的MAX_NODE_SIZE
+
+请根据需要修改为数据集可能的最大节点数
+
 ```bash
 cd exp
 mkdir build && cd build
@@ -17,6 +21,16 @@ make
 ```
 
 ## 更新的内容
+
+为了防止爆long long情况出现，重新规范了数据类型。
+
+节点index与节点的个数 - node - int64_t
+
+k - int32 - int32_t
+
+取值$\in [0,1]$的整数 - int8_t
+
+其他值 - int64 - int64_t
 
 实现了*IMM Algorithm*，并实现了option 2的IMM版本。调用方式参考main.cpp与test.cpp。
 
@@ -46,8 +60,6 @@ option2思路：在IMM算法的NodeSelection部分， 将"Identify the vertex $v
    ```
 
    IMM-option2的耗时很少，且与CELF-option2结果较接近；某些情况下解质量甚至超过了CELF-option2.
-
-
 
 ## 实验大纲
 

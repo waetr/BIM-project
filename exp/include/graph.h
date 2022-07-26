@@ -22,12 +22,12 @@ using namespace std;
  * third argument : m_{u,v} in IC-M model
  */
 struct Edge {
-    int v;
+    node v;
     double p, m;
 
     Edge() {}
 
-    Edge(int v, double p, double m) : v(v), p(p), m(m) {}
+    Edge(node v, double p, double m) : v(v), p(p), m(m) {}
 };
 
 const vector<Edge> gg(0);
@@ -39,9 +39,10 @@ public:
      * @param m : number of edges
      * @param g : adjacency list
      */
-    int n, m, deadline;
+    node n;
+    int64 m, deadline;
     vector<vector<Edge> > g, gT;
-    vector<int> deg_in, deg_out;
+    vector<node> deg_in, deg_out;
     model_type diff_model;
 
     /*!
@@ -57,7 +58,7 @@ public:
     /*!
      * @brief A destructor for graph.
     */
-    ~Graph() {}
+    ~Graph() = default;
 
     /*!
      * @brief Copy constructor.
@@ -79,7 +80,7 @@ public:
      * @param target : destination node
      * @param weight : weight of edge, 1.0 as default
      */
-    void add_edge(int source, int target, double weight = 1.0) {
+    void add_edge(node source, node target, double weight = 1.0) {
         n = max(n, max(source, target) + 1);
         while (g.size() < n) {
             g.emplace_back(gg);
@@ -99,9 +100,9 @@ public:
      * @param filename : the name of loading file
      */
     Graph(const string &filename, graph_type type) : Graph() {
-        vector<pair<int, int>> edges;
+        vector<pair<node, node>> edges;
         ifstream inFile(filename, ios::in);
-        if(!inFile.is_open()) {
+        if (!inFile.is_open()) {
             std::cerr << "(get error) graph file not found: " << filename << std::endl;
             std::exit(-1);
         }
@@ -109,7 +110,7 @@ public:
         while (getline(inFile, lineStr)) {
             stringstream ss(lineStr);
             string str;
-            int x = -1, y;
+            node x = -1, y;
             while (getline(ss, str, ','))
                 if (x == -1) x = stoi(str);
                 else {
@@ -119,7 +120,7 @@ public:
                 }
         }
         inFile.close();
-        for (pair<int, int> e:edges) {
+        for (auto e : edges) {
             add_edge(e.first, e.second);
             if (type == UNDIRECTED_G) add_edge(e.second, e.first);
         }
@@ -129,32 +130,36 @@ public:
      * @brief Set the diffusion model to IC/LT. If you modify the graph later, you need to set it again.
      * @param new_type : the name of the diffusion model.
      */
-    void set_diffusion_model(model_type new_type, int new_deadline = 0) {
+    void set_diffusion_model(model_type new_type, int64 new_deadline = 0) {
         diff_model = new_type;
         if (new_type == IC) {
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < g[i].size(); j++)
                     g[i][j].p = 1.0 / deg_in[g[i][j].v];
             }
-        } else if(new_type == IC_M) {
-            double sum_m = 0;
-            int num_edges = 0;
+        } else if (new_type == IC_M) {
+            double sum_m = 0, sum_p = 0;
+            int64 num_edges = 0;
             for (int i = 0; i < n; i++) {
-                for (int j = 0; j < g[i].size(); j++){
+                for (int j = 0; j < g[i].size(); j++) {
                     g[i][j].p = 1.0 / deg_in[g[i][j].v];
                     g[i][j].m = 5.0 / (5.0 + deg_out[i]);
                     sum_m += g[i][j].m;
+                    sum_p += g[i][j].p;
                     num_edges++;
                 }
             }
             for (int i = 0; i < n; i++) {
-                for (int j = 0; j < gT[i].size(); j++){
+                for (int j = 0; j < gT[i].size(); j++) {
                     gT[i][j].p = 1.0 / deg_in[i];
                     gT[i][j].m = 5.0 / (5.0 + deg_out[g[i][j].v]);
                 }
             }
             deadline = new_deadline;
-            if(verbose_flag) cout << "average meeting probability = " << sum_m / num_edges << endl;
+            if (verbose_flag) {
+                cout << "average activate probability = " << sum_p / num_edges << endl;
+                cout << "average meeting probability = " << sum_m / num_edges << endl;
+            }
         }
     }
 };
