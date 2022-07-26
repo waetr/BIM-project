@@ -9,7 +9,7 @@
 #include <iostream>
 #include <algorithm>
 
-#define MAX_NODE_SIZE 20000
+#define MAX_NODE_SIZE 500000
 #define graph_type int8_t
 #define DIRECTED_G 0
 #define UNDIRECTED_G 1
@@ -29,6 +29,7 @@
 #define PAGERANK_ADVANCED 5
 #define CELF_ADVANCED 6
 #define IMM_NORMAL 7
+#define IMM_ADVANCED 8
 
 typedef int64_t node;
 typedef int32_t int32;

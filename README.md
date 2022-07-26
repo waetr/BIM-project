@@ -22,44 +22,46 @@ make
 
 ## 更新的内容
 
-为了防止爆long long情况出现，重新规范了数据类型。
+实现了IMM-Advance部分。
 
-节点index与节点的个数 - node - int64_t
+基本测试场景：数据集blog-catalog，ap size = 500, k = 10
 
-k - int32 - int32_t
+第一次测试：
 
-取值$\in [0,1]$的整数 - int8_t
+```pseudocode
+seed quality of PAGERANK = 1370.5            time = 0.13      size = 641.333
+seed quality of PAGERANK_ADVANCED = 3551.44  time = 0.162     size = 2380.33
+seed quality of IMM_NORMAL = 1432.29         time = 495.453   size = 662.667
+seed quality of IMM_ADVANCED = 3680.63       time = 0.265667  size = 2489
+```
 
-其他值 - int64 - int64_t
+IMM_NORMAL对每个ap node生成约500000个RI set，一共生成500 * 500000个，时间较慢；
 
-实现了*IMM Algorithm*，并实现了option 2的IMM版本。调用方式参考main.cpp与test.cpp。
+IMM_ADVANCED一次性生成约100000个RI set，比IMM_NORMAL中IMM单次生成的数量要少。
 
-option2思路：在IMM算法的NodeSelection部分， 将"Identify the vertex $v$"的取值范围设为$\N_{a_i}$(active participant的neighbour set)，其余不变。
 
-性能测试：
 
-1. 用IMM计算全图IM，并与CELF比较。
+注意到类似CELF的优化思路，可以把RI set存下来，让IMM_NORMAL时间大量减少。
 
-   ```pseudocode
-   CLEF set = {1463,1931,2235,2802,4671,7111,8094,8910,9132,9422}[10] CELF result = 63.9031 time = 46.172
-   IMM set = {1463,1823,1931,2235,2802,4671,8094,8910,9132,9422}[10] IMM result = 63.6642 time = 5.875
-   ```
+第二次测试：
 
-   IMM算法与CELF较为接近，且耗时很少。
+```pseudocode
+seed quality of PAGERANK = 1300.6            time = 0.146     size = 603.667
+seed quality of PAGERANK_ADVANCED = 3624.72  time = 0.166667  size = 2459.67
+seed quality of IMM_NORMAL = 1350.13         time = 4.625     size = 614.667
+seed quality of IMM_ADVANCED = 3758.8        time = 0.0416667 size = 2548.67
+```
 
-2. 用IMM-option 2计算BIM，并与CELF-option 2比较。
+**结论：IMM算法可以拓展到ap size较大的情况，且对比PageRank，IMM生成解集的质量略高。**
 
-   ```pseudocode
-   AP size = 5
-   k = 2
-    CELF result = 37.4323 time = 30.7017
-    IMM result = 37.034 time = 9.25
-   k = 5
-    CELF result = 70.2914 time = 202.929
-    IMM result = 74.157 time = 9.359
-   ```
+进一步的实验有待操作。
 
-   IMM-option2的耗时很少，且与CELF-option2结果较接近；某些情况下解质量甚至超过了CELF-option2.
+
+
+另外：用的开源的argparse.h有问题啊，目前暂不能通过args参数设置文件目录。debug中。。
+
+
+
 
 ## 实验大纲
 
@@ -290,3 +292,19 @@ RI_Gen的复杂度为$O(n^*logn^*+m^*)$，其中$n^*$和$m^*$为在集合中被�
 **当ap size=10,k=10时，CELF advanced已经非常的慢了(result_10_10.out, 总时长约24小时)。**
 
 *意见：如果要继续做ap size更大的部分，可以考虑用更快的FI sim代替MC sim?*
+
+7/26
+
+为了防止爆long long情况出现，重新规范了数据类型。
+
+节点index与节点的个数 - node - int64_t
+
+k - int32 - int32_t
+
+取值$\in [0,1]$的整数 - int8_t
+
+其他值 - int64 - int64_t
+
+实现了*IMM Algorithm*，并实现了option 2的IMM版本。调用方式参考main.cpp与test.cpp。
+
+option2思路：在IMM算法的NodeSelection部分， 将"Identify the vertex $v$"的取值范围设为$\N_{a_i}$(active participant的neighbour set)，其余不变。

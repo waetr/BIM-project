@@ -305,13 +305,10 @@ void advanced_CELF_method(Graph &graph, int32 k, vector<node> &A, vector<node> &
     set<node> S; //candidate neighbour set
     auto *num_neighbours = new node [graph.n]();
     auto *f = new vector<node>[graph.n](); //f[v] means in-coming active participant of v
-    //optimize : for participant that has not exceeding k neighbours, just select them all.
-    bool *selected = new bool[graph.n]();
-    for(node u : A) selected[u] = true; // cannot select active participants
     //push all candidate neighbour to S, and update f
     for (node u : A){
         for (auto &edge : graph.g[u]) {
-            if(!selected[edge.v]) {
+            if(find(A.begin(), A.end(), edge.v) == A.end()) {
                 S.insert(edge.v);
                 f[edge.v].emplace_back(u);
             }
@@ -322,11 +319,11 @@ void advanced_CELF_method(Graph &graph, int32 k, vector<node> &A, vector<node> &
     }
     typedef pair<double, pair<node, int64> > node0;
     priority_queue<node0> Q;
-    seeds.emplace_back(0); //Add a temporary space
+    seeds.resize(1); //Add a temporary space
     for (node u : S) {
-        seeds[seeds.size() - 1] = u;
-        if(!local_mg || seeds.size() > 1) {
-            Q.push(make_pair(MC_simulation(graph, seeds), make_pair(u, seeds.size() - 1)));
+        seeds[0] = u;
+        if(!local_mg) {
+            Q.push(make_pair(MC_simulation(graph, seeds), make_pair(u, 0)));
         }
         else {
             Q.push(make_pair(MG0[u], make_pair(u, 0)));
@@ -361,7 +358,6 @@ void advanced_CELF_method(Graph &graph, int32 k, vector<node> &A, vector<node> &
     }
     delete[] num_neighbours;
     delete[] f;
-    delete[] selected;
     if(verbose_flag) printf("CELF advanced done. total time = %.3f\n", time_by(cur));
 }
 

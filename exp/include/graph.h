@@ -95,11 +95,12 @@ public:
         gT[target].emplace_back(Edge(source, weight, weight));
     }
 
-    /*!
-     * load graph through a file
-     * @param filename : the name of loading file
-     */
-    Graph(const string &filename, graph_type type) : Graph() {
+/*!
+ * @brief load a graph through file
+ * @param filename : the path of the file
+ * @param type : detrmine the graph type is directed or undirected
+ */
+    void open(const string &filename, graph_type type) {
         vector<pair<node, node>> edges;
         ifstream inFile(filename, ios::in);
         if (!inFile.is_open()) {
@@ -124,6 +125,10 @@ public:
             add_edge(e.first, e.second);
             if (type == UNDIRECTED_G) add_edge(e.second, e.first);
         }
+    }
+
+    Graph(const string &filename, graph_type type) : Graph() {
+        this->open(filename, type);
     }
 
     /*!

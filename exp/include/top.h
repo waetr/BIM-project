@@ -9,6 +9,12 @@
 #include "argparse.h"
 #include "IMM.h"
 
+//const string graphFilePath = "../data/formal-com-dblp.csv";
+const string graphFilePath = "../data/blog-catalog.csv";
+const string MGFilePath = "../data/blog-catalog_mg.txt";
+
+
+
 void init_commandLine(int argc, char const *argv[]) {
     auto args = util::argparser("The experiment of BIM.");
     args.set_program_name("exp")
@@ -17,6 +23,7 @@ void init_commandLine(int argc, char const *argv[]) {
             .add_option("-l", "--local", "use local value as single spread or not")
             .add_option<int64>("-r", "--rounds", "number of MC simulation iterations per time, default is 10000", 10000)
             .parse(argc, argv);
+
     if (args.has_option("--verbose")) {
         verbose_flag = 1;
         cout << "verbose flag set to 1\n";
@@ -24,9 +31,9 @@ void init_commandLine(int argc, char const *argv[]) {
     if (args.has_option("--local")) {
         local_mg = 1;
         cout << "local spread flag set to 1\n";
-        ifstream inFile("../data/edges_mg.txt", ios::in);
+        ifstream inFile(MGFilePath, ios::in);
         if (!inFile.is_open()) {
-            std::cerr << "(get error) local file not found: edges_mg.txt" << std::endl;
+            std::cerr << "(get error) local file not found: " << args.get_option_string("--local") << std::endl;
             std::exit(-1);
         }
         int64 cnt = 0;
@@ -83,6 +90,11 @@ double solvers(Graph &graph, int32 k, vector<node> &A, vector<node> &seeds, IM_s
             print_set(seeds, " Seed set using IMM: ");
             print_set_f(seeds, " Seed set using IMM: ");
             break;
+        case IMM_ADVANCED:
+            advanced_IMM_method(graph, k, A, seeds);
+            print_set(seeds, " Seed set using ADVANCED IMM: ");
+            print_set_f(seeds, " Seed set using ADVANCED IMM: ");
+            break;
         default:
             break;
     }
@@ -98,7 +110,7 @@ void Run_simulation(vector<node> &A_batch, vector<int32> &k_batch, vector<IM_sol
     file_eraser.close();
     out.open("../output/result.out", ios::app);
     //load graph from absolute path
-    Graph G("../data/edges.csv", UNDIRECTED_G);
+    Graph G(graphFilePath, DIRECTED_G);
 
     //set diffusion model
     G.set_diffusion_model(type, 15);
@@ -106,10 +118,10 @@ void Run_simulation(vector<node> &A_batch, vector<int32> &k_batch, vector<IM_sol
     //Instantiate the active participant set A and seed set
     vector<node> A, seeds;
 
-    double result[12][100], timer[12][100];
+    double result[12][100], timer[12][100], seedSize[12][100];
 
     string solver_name[] = {"ENUMERATION", "DEGREE", "PAGERANK", "CELF", "DEGREE_ADVANCED", "PAGERANK_ADVANCED",
-                            "CELF_ADVANCED", "IMM_NORMAL"};
+                            "CELF_ADVANCED", "IMM_NORMAL", "IMM_ADVANCED"};
 
 
     for (node A_size : A_batch) {
@@ -122,15 +134,16 @@ void Run_simulation(vector<node> &A_batch, vector<int32> &k_batch, vector<IM_sol
             print_set_f(A, "active participant: "), out << '\n';
             overlap_ratio += estimate_neighbor_overlap(G, A) / rounds;
             for (int32 k : k_batch) {
-                printf("Working on A_size = %d, round = %d, k = %d\n", A_size, r_, k);
+                cout << "Working on A_size = " << A_size << ", round = " << r_ << ", k = " << k << endl;
                 out << "Working on A_size = " << A_size << ", round = " << r_ << ", k = " << k << endl;
                 for (IM_solver solver_used : solver_batch) {
                     timer[solver_used][k] += solvers(G, k, A, seeds, solver_used) / rounds;
-                    result[solver_used][k] += MC_simulation(G, seeds) / rounds;
+                    result[solver_used][k] += FI_simulation(G, seeds) / rounds;
+                    seedSize[solver_used][k] += (double) seeds.size() / rounds;
                 }
             }
         }
-        printf("*************\nSize %d DONE!\n*************\n", A_size);
+        cout << "\"*************\\nSize " << A_size << " DONE!\n*************\n";
 
         cout << "Active participant size = " << A_size << endl;
         cout << "Mean overlap ratio = " << overlap_ratio << endl;
@@ -138,7 +151,8 @@ void Run_simulation(vector<node> &A_batch, vector<int32> &k_batch, vector<IM_sol
             cout << "\tk = " << k << endl;
             for (IM_solver solver_used : solver_batch) {
                 cout << "\t\tseed quality of " << solver_name[solver_used] << " = " << result[solver_used][k];
-                cout << " mean time = " << timer[solver_used][k] << endl;
+                cout << " time = " << timer[solver_used][k];
+                cout << " size = " << seedSize[solver_used][k] << endl;
             }
         }
 
@@ -148,7 +162,8 @@ void Run_simulation(vector<node> &A_batch, vector<int32> &k_batch, vector<IM_sol
             out << "\tk = " << k << endl;
             for (IM_solver solver_used : solver_batch) {
                 out << "\t\tseed quality of " << solver_name[solver_used] << " = " << result[solver_used][k];
-                out << " mean time = " << timer[solver_used][k] << endl;
+                out << " time = " << timer[solver_used][k];
+                out << " size = " << seedSize[solver_used][k] << endl;
             }
         }
     }

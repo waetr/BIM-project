@@ -7,14 +7,14 @@
 
 int main(int argc, char const *argv[]) {
     init_commandLine(argc, argv);
-    out.open("../data/edges_mg_more.txt");
-    Graph G("../data/edges.csv", UNDIRECTED_G);
+    out.open("../data/dblp_mg.txt");
+    Graph G("../data/formal-com-dblp.csv", DIRECTED_G);
     G.set_diffusion_model(IC_M, 15);
-    vector<int> seeds;
+    vector<node> seeds;
     seeds.resize(1);
-    for (int u = 0; u < G.n; u++) {
+    for (node u = 0; u < G.n; u++) {
         seeds[0] = u;
-        out << setprecision(10) << MC_simulation(G, seeds) << endl;
+        out << setprecision(10) << FI_simulation(G, seeds) << endl;
         cout << "Calculating : " << u << endl;
     }
     out.close();

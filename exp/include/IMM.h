@@ -33,9 +33,6 @@ public:
     }
 };
 
-///set of nodes that can be selected as seed set
-vector<node> IMMCandidate;
-
 ///set of RI sets
 vector<vector<node>> RRI;
 
@@ -68,20 +65,15 @@ bool DijkstraVis[MAX_NODE_SIZE];
  *
  */
 void RI_Gen(Graph &graph, vector<node> &uStart, vector<node> &RR, bool RI_flag) {
-    if (graph.diff_model != IC_M) {
-        cerr << "RI_Gen must be used for IC-M model!\n";
-        exit(-1);
-    }
     if (dist[MAX_NODE_SIZE] != -1) {
         //Initialize dist[] to be all -1 at the first time
         memset(dist, -1, sizeof(dist));
     }
-    const int64 Inf = graph.deadline + 1;
     auto *edge_list = RI_flag ? &graph.gT : &graph.g;
     for (node u : uStart)
         dist[u] = 0;
     RR.clear();
-    priority_queue<pair<int64 , node>> Q;
+    priority_queue<pair<int64, node>> Q;
     for (node u : uStart)
         Q.push(make_pair(0, u));
     while (!Q.empty()) { //Dijkstra Algorithm
@@ -91,14 +83,22 @@ void RI_Gen(Graph &graph, vector<node> &uStart, vector<node> &RR, bool RI_flag) 
         DijkstraVis[u] = true;
         RR.emplace_back(u);
         for (auto &edgeT : (*edge_list)[u]) {
-            geometric_distribution<int> distribution(edgeT.m);
             bool activate_success = (random_real() < edgeT.p);
-            int randomWeight = activate_success ? (distribution(random_engine) + 1) : Inf;
-            if ((dist[edgeT.v] == -1 || dist[edgeT.v] > dist[u] + randomWeight) &&
-                dist[u] + randomWeight <= graph.deadline) {
-                dist[edgeT.v] = dist[u] + randomWeight;
-                Q.push(make_pair(-dist[edgeT.v], edgeT.v));
+            if (activate_success) {
+                int randomWeight;
+                if (graph.diff_model == IC) {
+                    randomWeight = 1;
+                } else if (graph.diff_model == IC_M) {
+                    geometric_distribution<int> distribution(edgeT.m);
+                    randomWeight = distribution(random_engine) + 1;
+                }
+                if ((dist[edgeT.v] == -1 || dist[edgeT.v] > dist[u] + randomWeight) &&
+                    dist[u] + randomWeight <= graph.deadline) {
+                    dist[edgeT.v] = dist[u] + randomWeight;
+                    Q.push(make_pair(-dist[edgeT.v], edgeT.v));
+                }
             }
+
         }
     }
     for (node u : RR)
@@ -151,17 +151,18 @@ int64 coveredNum_tmp[MAX_NODE_SIZE];
 /*!
  * @brief Selection phase of IMM : Select a set S of size k that covers the maximum RI sets in R
  * @param graph : the graph
+ * @param candidate : candidate node set in which seed set can choose nodes
  * @param k : the size of S
  * @param S : returns S as an passed parameter
  * @return : the fraction of RI sets in R that are covered by S
  */
-double IMMNodeSelection(Graph &graph, int32 k, vector<node> &S) {
+double IMMNodeSelection(Graph &graph, vector<node> &candidate, int32 k, vector<node> &S) {
     S.clear();
     vector<bool> RIsetCovered(RRI.size(), false);
-    for (node i : IMMCandidate) nodeRemain[i] = true;
+    for (node i : candidate) nodeRemain[i] = true;
     memcpy(coveredNum_tmp, coveredNum, graph.n * sizeof(int64));
     priority_queue<pair<int64, node>> Q;
-    for (node i : IMMCandidate) Q.push(make_pair(coveredNum_tmp[i], i));
+    for (node i : candidate) Q.push(make_pair(coveredNum_tmp[i], i));
     int64 influence = 0;
 
     while (S.size() < k && !Q.empty()) {
@@ -183,30 +184,32 @@ double IMMNodeSelection(Graph &graph, int32 k, vector<node> &S) {
             RIsetCovered[RIIndex] = true;
         }
     }
-    for (node i : IMMCandidate) nodeRemain[i] = false;
+    for (node i : candidate) nodeRemain[i] = false;
     return (double) influence / RRI.size();
 }
 
 /*!
  * @brief Sampling phase of IMM : generate sufficient RI sets into R.
  * @param graph : the graph
+ * @param candidate : candidate node set in which seed set can choose nodes
  * @param k : the size of the seed set
  * @param eps : argument related to accuracy.
  * @param iota : argument related to accuracy.
  */
-void IMMSampling(Graph &graph, int32 k, double eps, double iota) {
+void IMMSampling(Graph &graph, vector<node> &candidate, int32 k, double eps, double iota) {
     double epsilon_prime = eps * sqrt(2);
     double LB = 1;
     vector<node> S_tmp;
     auto End = (int) (log2(graph.n) + 1e-9 - 1);
     for (int i = 1; i <= End; i++) {
         auto ci = (int64) ((2.0 + 2.0 / 3.0 * epsilon_prime) *
-                               (iota * log(graph.n) + Math::logcnk(graph.n, k) + log(Math::log2(graph.n))) *
-                               pow(2.0, i) / Math::sqr(epsilon_prime));
+                           (iota * log(graph.n) + Math::logcnk(graph.n, k) + log(Math::log2(graph.n))) *
+                           pow(2.0, i) / Math::sqr(epsilon_prime));
+        if (verbose_flag) cout << "\tci = " << ci << endl;
         while (RRI.size() < ci)
             insert_R(graph);
 
-        double ept = IMMNodeSelection(graph, k, S_tmp);
+        double ept = IMMNodeSelection(graph, candidate, k, S_tmp);
         if (ept > 1.0 / pow(2.0, i)) {
             LB = ept * graph.n / (1.0 + epsilon_prime);
             break;
@@ -218,6 +221,7 @@ void IMMSampling(Graph &graph, int32 k, double eps, double iota) {
     auto C = (int64) (2.0 * graph.n * Math::sqr((1.0 - 1.0 / e) * alpha + beta) / (LB * Math::sqr(eps)));
     while (RRI.size() < C)
         insert_R(graph);
+    if (verbose_flag) cout << "\tfinal C = " << C << endl;
 }
 
 /*!
@@ -227,13 +231,15 @@ void IMMSampling(Graph &graph, int32 k, double eps, double iota) {
  * @param k : the size of the seed set
  * @param eps : argument related to accuracy. default as 0.5.
  * @param iota : argument related to accuracy. default as 1.
+ * @param G_flag : determine if it is a version of IMM-G
  */
 void IMM(Graph &G, vector<node> &candidate, int32 k, double eps, double iota, vector<node> &S) {
-    IMMCandidate = candidate;
-    init_R();
+    //init_R();
     double iota_new = iota * (1.0 + log(2) / log(G.n));
-    IMMSampling(G, k, eps, iota_new);
-    IMMNodeSelection(G, k, S);
+//    while (RRI.size() < 200000)
+//        insert_R(G);
+    IMMSampling(G, candidate, k, eps, iota_new);
+    IMMNodeSelection(G, candidate, k, S);
 }
 
 /*!
@@ -249,7 +255,7 @@ void IMM_method(Graph &graph, int32 k, vector<node> &A, vector<node> &seeds) {
     for (node u : A) {
         vector<node> neighbours, one_seed;
         for (auto &edge : graph.g[u]) {
-            if(find(A.begin(), A.end(), edge.v) == A.end()) {
+            if (find(A.begin(), A.end(), edge.v) == A.end()) {
                 neighbours.emplace_back(edge.v);
             }
         }
@@ -259,7 +265,130 @@ void IMM_method(Graph &graph, int32 k, vector<node> &A, vector<node> &seeds) {
     }
     for (node w : seeds_reorder) seeds.emplace_back(w);
     seeds_reorder.clear();
-    if(verbose_flag) printf("IMM method done. total time = %.3f\n", time_by(cur));
+    if (verbose_flag) printf("IMM method done. total time = %.3f\n", time_by(cur));
+}
+
+
+/*!
+ * @brief Selection phase of advanced IMM.
+ * @param graph : the graph
+ * @param A : active participant set
+ * @param k : the size of S
+ * @param S : returns S as an passed parameter
+ * @return : the fraction of RI sets in R that are covered by S
+ */
+double IMMNodeSelection_advanced(Graph &graph, vector<node> &A, int32 k, vector<node> &S) {
+    S.clear();
+    set<node> N; //candidate neighbour set
+    auto *num_neighbours = new node[graph.n]();
+    auto *f = new vector<node>[graph.n](); //f[v] means in-coming active participant of v
+    //push all candidate neighbour to S, and update f
+    for (node u : A) {
+        for (auto &edge : graph.g[u]) {
+            if (find(A.begin(), A.end(), edge.v) == A.end()) {
+                N.insert(edge.v);
+                f[edge.v].emplace_back(u);
+            }
+        }
+    }
+    for (node w : S) {
+        shuffle(f[w].begin(), f[w].end(), std::mt19937(std::random_device()()));
+    }
+    vector<bool> RIsetCovered(RRI.size(), false);
+    for (node i : N) nodeRemain[i] = true;
+    memcpy(coveredNum_tmp, coveredNum, graph.n * sizeof(int64));
+    priority_queue<pair<int64, node>> Q;
+    for (node i : N) Q.push(make_pair(coveredNum_tmp[i], i));
+    int64 influence = 0;
+
+    while (!Q.empty()) {
+        int64 value = Q.top().first;
+        node maxInd = Q.top().second;
+        Q.pop();
+
+        node u0 = source_participant(maxInd, f, k, num_neighbours);
+        if (u0 == -1) continue;
+
+        if (value > coveredNum_tmp[maxInd]) {
+            Q.push(make_pair(coveredNum_tmp[maxInd], maxInd));
+            continue;
+        }
+        influence += coveredNum_tmp[maxInd];
+        S.emplace_back(maxInd);
+        num_neighbours[u0]++;
+        nodeRemain[maxInd] = false;
+        for (int64 RIIndex : covered[maxInd]) {
+            if (RIsetCovered[RIIndex]) continue;
+            for (node u : RRI[RIIndex]) {
+                if (nodeRemain[u]) coveredNum_tmp[u]--;
+            }
+            RIsetCovered[RIIndex] = true;
+        }
+    }
+    for (node i : N) nodeRemain[i] = false;
+    delete[] num_neighbours;
+    delete[] f;
+    return (double) influence / RRI.size();
+}
+
+/*!
+ * @brief Sampling phase of IMM : generate sufficient RI sets into R.
+ * @param graph : the graph
+ * @param candidate : candidate node set in which seed set can choose nodes
+ * @param k : the size of the seed set
+ * @param eps : argument related to accuracy.
+ * @param iota : argument related to accuracy.
+ */
+void IMMSampling_advanced(Graph &graph, vector<node> &A, int32 k, double eps, double iota) {
+    int32 kA = 0;
+    for (node u : A) kA += min(k, (int32) graph.g[u].size());
+    double epsilon_prime = eps * sqrt(2);
+    double LB = 1;
+    vector<node> S_tmp;
+    auto End = (int) (log2(graph.n) + 1e-9 - 1);
+    for (int i = 1; i <= End; i++) {
+        auto ci = (int64) ((2.0 + 2.0 / 3.0 * epsilon_prime) *
+                           (iota * log(graph.n) + Math::logcnk(graph.n, kA) + log(Math::log2(graph.n))) *
+                           pow(2.0, i) / Math::sqr(epsilon_prime));
+        if (verbose_flag) cout << "\tci = " << ci << endl;
+        while (RRI.size() < ci)
+            insert_R(graph);
+
+        double ept = IMMNodeSelection_advanced(graph, A, k, S_tmp);
+        if (ept > 1.0 / pow(2.0, i)) {
+            LB = ept * graph.n / (1.0 + epsilon_prime);
+            break;
+        }
+    }
+    double e = exp(1);
+    double alpha = sqrt(iota * log(graph.n) + log(2));
+    double beta = sqrt((1.0 - 1.0 / e) * (Math::logcnk(graph.n, kA) + iota * log(graph.n) + log(2)));
+    auto C = (int64) (2.0 * graph.n * Math::sqr((1.0 - 1.0 / e) * alpha + beta) / (LB * Math::sqr(eps)));
+    while (RRI.size() < C)
+        insert_R(graph);
+    if (verbose_flag) cout << "\tfinal C = " << C << endl;
+}
+
+/*!
+ * @brief Sampling phase of IMM : generate sufficient RI sets.
+ * @param graph : the graph
+ * @param candidate : candidate node set in which seed set can choose nodes
+ * @param k : the size of the seed set
+ * @param eps : argument related to accuracy. default as 0.5.
+ * @param iota : argument related to accuracy. default as 1.
+ * @param G_flag : determine if it is a version of IMM-G
+ */
+void IMM_advanced(Graph &G, vector<node> &A, int32 k, double eps, double iota, vector<node> &S) {
+    //init_R();
+    double iota_new = iota * (1.0 + log(2) / log(G.n));
+    IMMSampling_advanced(G, A, k, eps, iota_new);
+    IMMNodeSelection_advanced(G, A, k, S);
+}
+
+void advanced_IMM_method(Graph &graph, int32 k, vector<node> &A, vector<node> &seeds) {
+    double cur = clock();
+    IMM_advanced(graph, A, k, 0.5, 1, seeds);
+    if(verbose_flag) printf("IMM advanced done. total time = %.3f\n", time_by(cur));
 }
 
 #endif //SIMULATION_H_IMM_H
