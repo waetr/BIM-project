@@ -48,7 +48,9 @@ void CELF(Graph &graph, int32 k, vector<node> &candidate, vector<node> &seeds) {
         node0 u = Q.top();
         Q.pop();
         if (u.second.second == seeds.size()) {
-            if(verbose_flag) printf("\tnode = %d\tround = %d\ttime = %.3f MG = %.3f\n", u.second.first, r, time_by(cur), u.first);
+            if(verbose_flag) {
+                cout << "\tnode = " << u.second.first << "\tround = " << r << "\ttime = " <<time_by(cur) << endl;
+            }
             seeds.emplace_back(u.second.first);
             current_spread += u.first;
         } else {
@@ -208,15 +210,11 @@ void enumeration_method(Graph &graph, int32 k, vector<node> &A, vector<node> &se
  */
 node source_participant(node v, vector<node> f[], const int32 k, const node num_neighbours[]) {
     if(f[v].empty()) return -1;
-    node u = f[v][f[v].size() - 1];
-    while (num_neighbours[u] == k) {
-        f[v].pop_back();
-        if (f[v].empty()) {
-            u = -1;
-            break;
-        }
-        u = f[v][f[v].size() - 1];
+    node u = f[v][0];
+    for(int i = 1; i < f[v].size(); i++) {
+        if(num_neighbours[f[v][i]] < num_neighbours[u]) u = f[v][i];
     }
+    if(num_neighbours[u] >= k) return -1;
     return u;
 }
 
@@ -346,7 +344,7 @@ void advanced_CELF_method(Graph &graph, int32 k, vector<node> &A, vector<node> &
             seeds.emplace_back(v);
             current_spread += mg;
             if(verbose_flag) {
-                printf("\tnode = %d\tround = %d\ttime = %.5f\n", v, r, time_by(cur));
+                cout << "\tnode = " << v << "\tround = " << r << "\ttime = " <<time_by(cur) << endl;
             }
         } else {
             seeds.emplace_back(v);

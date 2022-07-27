@@ -1,22 +1,21 @@
-//
-// Created by lenovo on 2022/7/26.
-//
-
-#include <iomanip>
 #include "top.h"
-#include <map>
 
-map<pair<node, node>, bool> h;
+int64 reIndex[MAX_NODE_SIZE], cnt = 0;
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char const *argv[]){
+    memset(reIndex, -1, sizeof (reIndex));
     init_commandLine(argc, argv);
-    out.open("../data/blog-catalog.csv");
-    Graph G("../data/edges.csv", UNDIRECTED_G);
-    for (node u = 0; u < G.n; u++) {
-        for(auto &edge : G.g[u]) {
-                out << u << "," << edge.v << endl;
+    Graph G(graphFilePath, DIRECTED_G);
+    out.open("../data/soc-LiveJournal1.csv", ios::app);
+    for(int i = 0; i < G.n; i++){
+        if(!G.deg_in[i] && !G.deg_out[i]) continue;
+        reIndex[i] = cnt++;
+    }
+    for(int i = 0; i < G.n; i++){
+        if(reIndex[i] == -1) continue;
+        for(auto &e : G.g[i]) {
+            out << reIndex[i] << "," << reIndex[e.v] << endl;
         }
     }
-    out.close();
     return 0;
 }

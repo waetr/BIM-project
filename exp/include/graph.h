@@ -138,15 +138,15 @@ public:
     void set_diffusion_model(model_type new_type, int64 new_deadline = 0) {
         diff_model = new_type;
         if (new_type == IC) {
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < g[i].size(); j++)
+            for (int64 i = 0; i < n; i++) {
+                for (int64 j = 0; j < g[i].size(); j++)
                     g[i][j].p = 1.0 / deg_in[g[i][j].v];
             }
         } else if (new_type == IC_M) {
             double sum_m = 0, sum_p = 0;
             int64 num_edges = 0;
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < g[i].size(); j++) {
+            for (int64 i = 0; i < n; i++) {
+                for (int64 j = 0; j < g[i].size(); j++) {
                     g[i][j].p = 1.0 / deg_in[g[i][j].v];
                     g[i][j].m = 5.0 / (5.0 + deg_out[i]);
                     sum_m += g[i][j].m;
@@ -154,10 +154,10 @@ public:
                     num_edges++;
                 }
             }
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < gT[i].size(); j++) {
+            for (int64 i = 0; i < n; i++) {
+                for (int64 j = 0; j < gT[i].size(); j++) {
                     gT[i][j].p = 1.0 / deg_in[i];
-                    gT[i][j].m = 5.0 / (5.0 + deg_out[g[i][j].v]);
+                    gT[i][j].m = 5.0 / (5.0 + deg_out[gT[i][j].v]);
                 }
             }
             deadline = new_deadline;

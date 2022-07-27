@@ -100,8 +100,9 @@ double MC_simulation(Graph &graph, vector<node> &S) {
             A.clear();
         }
     }
-    double end = time_by(cur);
-    if (verbose_flag) printf("\t\tresult=%.3f time=%.3f meet time=%lld\n", res, end, meet_time);
+    if (verbose_flag) {
+        cout << "\t\tresult="  << res << " time=" << time_by(cur) << "meet time=" << meet_time << endl;
+    }
     return res;
 }
 

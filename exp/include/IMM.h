@@ -24,7 +24,7 @@ public:
         for (int i = 1; i <= k; i++) {
             ans -= log(i);
         }
-        return ans;
+        return max(ans, 0.0);
     }
 
     template<class T>
@@ -203,9 +203,9 @@ void IMMSampling(Graph &graph, vector<node> &candidate, int32 k, double eps, dou
     auto End = (int) (log2(graph.n) + 1e-9 - 1);
     for (int i = 1; i <= End; i++) {
         auto ci = (int64) ((2.0 + 2.0 / 3.0 * epsilon_prime) *
-                           (iota * log(graph.n) + Math::logcnk(graph.n, k) + log(Math::log2(graph.n))) *
-                           pow(2.0, i) / Math::sqr(epsilon_prime));
-        if (verbose_flag) cout << "\tci = " << ci << endl;
+                           (iota * log(graph.n) + Math::logcnk(graph.n, k) + log(Math::log2(graph.n))) / Math::sqr(epsilon_prime) *
+                           pow(2.0, i));
+        if(ci > (int64)100000000) break;
         while (RRI.size() < ci)
             insert_R(graph);
 
@@ -218,10 +218,13 @@ void IMMSampling(Graph &graph, vector<node> &candidate, int32 k, double eps, dou
     double e = exp(1);
     double alpha = sqrt(iota * log(graph.n) + log(2));
     double beta = sqrt((1.0 - 1.0 / e) * (Math::logcnk(graph.n, k) + iota * log(graph.n) + log(2)));
-    auto C = (int64) (2.0 * graph.n * Math::sqr((1.0 - 1.0 / e) * alpha + beta) / (LB * Math::sqr(eps)));
+    auto C = (int64) (2.0 * graph.n * Math::sqr((1.0 - 1.0 / e) * alpha + beta) / LB / Math::sqr(eps));
+    C = min(C, (int64)100000000);
     while (RRI.size() < C)
         insert_R(graph);
-    if (verbose_flag) cout << "\tfinal C = " << C << endl;
+    if (verbose_flag) {
+        cout << "\tfinal C = " << C << endl;
+    }
 }
 
 /*!
@@ -342,6 +345,7 @@ double IMMNodeSelection_advanced(Graph &graph, vector<node> &A, int32 k, vector<
 void IMMSampling_advanced(Graph &graph, vector<node> &A, int32 k, double eps, double iota) {
     int32 kA = 0;
     for (node u : A) kA += min(k, (int32) graph.g[u].size());
+    kA = min(kA, (int32)graph.n);
     double epsilon_prime = eps * sqrt(2);
     double LB = 1;
     vector<node> S_tmp;
@@ -363,7 +367,7 @@ void IMMSampling_advanced(Graph &graph, vector<node> &A, int32 k, double eps, do
     double e = exp(1);
     double alpha = sqrt(iota * log(graph.n) + log(2));
     double beta = sqrt((1.0 - 1.0 / e) * (Math::logcnk(graph.n, kA) + iota * log(graph.n) + log(2)));
-    auto C = (int64) (2.0 * graph.n * Math::sqr((1.0 - 1.0 / e) * alpha + beta) / (LB * Math::sqr(eps)));
+    auto C = (int64) (2.0 * graph.n * Math::sqr((1.0 - 1.0 / e) * alpha + beta) / LB / Math::sqr(eps));
     while (RRI.size() < C)
         insert_R(graph);
     if (verbose_flag) cout << "\tfinal C = " << C << endl;

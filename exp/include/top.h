@@ -9,29 +9,27 @@
 #include "argparse.h"
 #include "IMM.h"
 
-//const string graphFilePath = "../data/formal-com-dblp.csv";
-const string graphFilePath = "../data/blog-catalog.csv";
-const string MGFilePath = "../data/blog-catalog_mg.txt";
-
-
+string graphFilePath;
 
 void init_commandLine(int argc, char const *argv[]) {
     auto args = util::argparser("The experiment of BIM.");
     args.set_program_name("exp")
             .add_help_option()
+            .add_argument<std::string>("input", "initialize graph file")
             .add_option("-v", "--verbose", "output verbose message or not")
-            .add_option("-l", "--local", "use local value as single spread or not")
+            .add_option<std::string>("-l", "--local", "use local value as single spread or not", "")
             .add_option<int64>("-r", "--rounds", "number of MC simulation iterations per time, default is 10000", 10000)
             .parse(argc, argv);
-
+    graphFilePath = "../data/" + args.get_argument_string("input");
     if (args.has_option("--verbose")) {
         verbose_flag = 1;
         cout << "verbose flag set to 1\n";
     }
-    if (args.has_option("--local")) {
+    if (!args.get_option_string("--local").empty()) {
         local_mg = 1;
-        cout << "local spread flag set to 1\n";
-        ifstream inFile(MGFilePath, ios::in);
+        string MGPath = "../data/" + args.get_option_string("--local");
+        cout << "local spread flag set to 1, file path = " << MGPath << endl;
+        ifstream inFile(MGPath, ios::in);
         if (!inFile.is_open()) {
             std::cerr << "(get error) local file not found: " << args.get_option_string("--local") << std::endl;
             std::exit(-1);
@@ -40,10 +38,8 @@ void init_commandLine(int argc, char const *argv[]) {
         while (inFile.good()) inFile >> MG0[cnt++];
         inFile.close();
     }
-    if (args.has_option("--rounds")) {
-        MC_iteration_rounds = args.get_option_int64("--rounds");
-        cout << "MC_iteration_rounds set to " << MC_iteration_rounds << endl;
-    }
+    MC_iteration_rounds = args.get_option_int64("--rounds");
+    cout << "MC_iteration_rounds set to " << MC_iteration_rounds << endl;
 }
 
 double solvers(Graph &graph, int32 k, vector<node> &A, vector<node> &seeds, IM_solver solver) {
@@ -53,47 +49,47 @@ double solvers(Graph &graph, int32 k, vector<node> &A, vector<node> &seeds, IM_s
         case ENUMERATION:
             enumeration_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using enumeration: ");
-            print_set_f(seeds, " Seed set using enumeration: ");
+            //print_set_f(seeds, " Seed set using enumeration: ");
             break;
         case DEGREE:
             degree_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using degree: ");
-            print_set_f(seeds, " Seed set using degree: ");
+            //print_set_f(seeds, " Seed set using degree: ");
             break;
         case PAGERANK:
             pgrank_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using pagerank: ");
-            print_set_f(seeds, " Seed set using pagerank: ");
+            //print_set_f(seeds, " Seed set using pagerank: ");
             break;
         case CELF_NORMAL:
             CELF_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using CELF: ");
-            print_set_f(seeds, " Seed set using CELF: ");
+            //print_set_f(seeds, " Seed set using CELF: ");
             break;
         case DEGREE_ADVANCED:
             advanced_degree_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using ADVANCED degree: ");
-            print_set_f(seeds, " Seed set using ADVANCED degree: ");
+            //print_set_f(seeds, " Seed set using ADVANCED degree: ");
             break;
         case PAGERANK_ADVANCED:
             advanced_pgrank_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using ADVANCED pagerank: ");
-            print_set_f(seeds, " Seed set using ADVANCED pagerank: ");
+            //print_set_f(seeds, " Seed set using ADVANCED pagerank: ");
             break;
         case CELF_ADVANCED:
             advanced_CELF_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using ADVANCED CELF: ");
-            print_set_f(seeds, " Seed set using ADVANCED CELF: ");
+            //print_set_f(seeds, " Seed set using ADVANCED CELF: ");
             break;
         case IMM_NORMAL:
             IMM_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using IMM: ");
-            print_set_f(seeds, " Seed set using IMM: ");
+            //print_set_f(seeds, " Seed set using IMM: ");
             break;
         case IMM_ADVANCED:
             advanced_IMM_method(graph, k, A, seeds);
             print_set(seeds, " Seed set using ADVANCED IMM: ");
-            print_set_f(seeds, " Seed set using ADVANCED IMM: ");
+            //print_set_f(seeds, " Seed set using ADVANCED IMM: ");
             break;
         default:
             break;
@@ -118,7 +114,7 @@ void Run_simulation(vector<node> &A_batch, vector<int32> &k_batch, vector<IM_sol
     //Instantiate the active participant set A and seed set
     vector<node> A, seeds;
 
-    double result[12][100], timer[12][100], seedSize[12][100];
+    double result[12][500], timer[12][500], seedSize[12][500];
 
     string solver_name[] = {"ENUMERATION", "DEGREE", "PAGERANK", "CELF", "DEGREE_ADVANCED", "PAGERANK_ADVANCED",
                             "CELF_ADVANCED", "IMM_NORMAL", "IMM_ADVANCED"};

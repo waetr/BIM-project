@@ -9,7 +9,7 @@
 #include <iostream>
 #include <algorithm>
 
-#define MAX_NODE_SIZE 500000
+#define MAX_NODE_SIZE 5000000
 #define graph_type int8_t
 #define DIRECTED_G 0
 #define UNDIRECTED_G 1
@@ -81,6 +81,7 @@ void print_set(std::vector<node> &S, const std::string &Prefix = "") {
  * @param S : the set
  */
 void print_set_f(std::vector<node> &S, const std::string &Prefix = "") {
+    if(S.size() > 100) return;
     std::vector<node> S_ordered = S;
     std::sort(S_ordered.begin(), S_ordered.end());
     out << Prefix;

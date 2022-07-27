@@ -1,10 +1,13 @@
 # BIM-project
 
-实验用数据集：BlogCatalog
+## 实验用数据集
 
-点数=10312 边数=667966 平均度数=64.7756 
-
-average meeting probability = 0.0574587
+| Name                                                         | Type       | Nodes     | Edges      |
+| ------------------------------------------------------------ | ---------- | --------- | ---------- |
+| BlogCatalog                                                  | Undirected | 10,312    | 333,983    |
+| [com-DBLP](http://snap.stanford.edu/data/com-DBLP.html)      | Undirected | 317,080   | 1,049,866  |
+| [soc-LiveJournal1](http://snap.stanford.edu/data/soc-LiveJournal1.html) | Directed   | 4,847,571 | 68,993,773 |
+| [soc-Pokec](http://snap.stanford.edu/data/soc-Pokec.html)    | Directed   | 1,632,803 | 30,622,564 |
 
 ## 编译与运行
 
@@ -17,48 +20,22 @@ cd exp
 mkdir build && cd build
 cmake ..
 make
-./exp [-? | -v | -l | -r 10000]
+./exp com-dblp.csv [-? | -v | -l dblp_mg.txt | -r 10000]
 ```
+
+Note: 
+
+com-dblp.csv为data文件夹内图文件的文件名；
+
+-l后参数dblp_mg.txt为data文件夹内local single spread文件的文件名；
+
+-r后参数为MC simulation的迭代次数；
+
+-v为打开verbose flag.
 
 ## 更新的内容
 
-实现了IMM-Advance部分。
-
-基本测试场景：数据集blog-catalog，ap size = 500, k = 10
-
-第一次测试：
-
-```pseudocode
-seed quality of PAGERANK = 1370.5            time = 0.13      size = 641.333
-seed quality of PAGERANK_ADVANCED = 3551.44  time = 0.162     size = 2380.33
-seed quality of IMM_NORMAL = 1432.29         time = 495.453   size = 662.667
-seed quality of IMM_ADVANCED = 3680.63       time = 0.265667  size = 2489
-```
-
-IMM_NORMAL对每个ap node生成约500000个RI set，一共生成500 * 500000个，时间较慢；
-
-IMM_ADVANCED一次性生成约100000个RI set，比IMM_NORMAL中IMM单次生成的数量要少。
-
-
-
-注意到类似CELF的优化思路，可以把RI set存下来，让IMM_NORMAL时间大量减少。
-
-第二次测试：
-
-```pseudocode
-seed quality of PAGERANK = 1300.6            time = 0.146     size = 603.667
-seed quality of PAGERANK_ADVANCED = 3624.72  time = 0.166667  size = 2459.67
-seed quality of IMM_NORMAL = 1350.13         time = 4.625     size = 614.667
-seed quality of IMM_ADVANCED = 3758.8        time = 0.0416667 size = 2548.67
-```
-
-**结论：IMM算法可以拓展到ap size较大的情况，且对比PageRank，IMM生成解集的质量略高。**
-
-进一步的实验有待操作。
-
-
-
-另外：用的开源的argparse.h有问题啊，目前暂不能通过args参数设置文件目录。debug中。。
+修复了一些在大图上运行的bug。
 
 
 
@@ -308,3 +285,42 @@ k - int32 - int32_t
 实现了*IMM Algorithm*，并实现了option 2的IMM版本。调用方式参考main.cpp与test.cpp。
 
 option2思路：在IMM算法的NodeSelection部分， 将"Identify the vertex $v$"的取值范围设为$\N_{a_i}$(active participant的neighbour set)，其余不变。
+
+
+
+7/27
+
+实现了IMM-Advance部分。
+
+基本测试场景：数据集blog-catalog，ap size = 500, k = 10
+
+第一次测试：
+
+```pseudocode
+seed quality of PAGERANK = 1370.5            time = 0.13      size = 641.333
+seed quality of PAGERANK_ADVANCED = 3551.44  time = 0.162     size = 2380.33
+seed quality of IMM_NORMAL = 1432.29         time = 495.453   size = 662.667
+seed quality of IMM_ADVANCED = 3680.63       time = 0.265667  size = 2489
+```
+
+IMM_NORMAL对每个ap node生成约500000个RI set，一共生成500 * 500000个，时间较慢；
+
+IMM_ADVANCED一次性生成约100000个RI set，比IMM_NORMAL中IMM单次生成的数量要少。
+
+
+
+注意到类似CELF的优化思路，可以把RI set存下来，让IMM_NORMAL时间大量减少。
+
+第二次测试：
+
+```pseudocode
+seed quality of PAGERANK = 1300.6            time = 0.146     size = 603.667
+seed quality of PAGERANK_ADVANCED = 3624.72  time = 0.166667  size = 2459.67
+seed quality of IMM_NORMAL = 1350.13         time = 4.625     size = 614.667
+seed quality of IMM_ADVANCED = 3758.8        time = 0.0416667 size = 2548.67
+```
+
+**结论：IMM算法可以拓展到ap size较大的情况，且对比PageRank，IMM生成解集的质量略高。**
+
+进一步的实验有待操作。
+
